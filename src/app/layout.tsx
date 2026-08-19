@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
@@ -32,6 +32,17 @@ export const metadata: Metadata = {
     locale: "es_AR",
     type: "website",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Mis Entradas",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0b0a12",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
