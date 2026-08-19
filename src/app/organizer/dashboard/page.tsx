@@ -106,14 +106,17 @@ export default async function OrganizerDashboardPage() {
                   </div>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-dashed border-white/10 flex items-center justify-between">
-                  <span className="font-mono text-xs text-haze uppercase tracking-widest">
+                <Link
+                  href={`/organizer/events/${event.id}/sales`}
+                  className="mt-3 pt-3 border-t border-dashed border-white/10 flex items-center justify-between hover:text-violet"
+                >
+                  <span className="font-mono text-xs text-haze uppercase tracking-widest hover:text-violet">
                     {vendidas} / {event.stock_total} vendidas
                   </span>
                   <span className="font-mono text-lg text-lime">
                     ${event.precio}
                   </span>
-                </div>
+                </Link>
               </TicketStub>
             );
           })}
