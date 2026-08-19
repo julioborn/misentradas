@@ -200,6 +200,7 @@ export type Database = {
           id: string
           metodo_pago: string
           mp_payment_id: string | null
+          nota: string | null
           qr_code: string
         }
         Insert: {
@@ -210,6 +211,7 @@ export type Database = {
           id?: string
           metodo_pago: string
           mp_payment_id?: string | null
+          nota?: string | null
           qr_code?: string
         }
         Update: {
@@ -220,6 +222,7 @@ export type Database = {
           id?: string
           metodo_pago?: string
           mp_payment_id?: string | null
+          nota?: string | null
           qr_code?: string
         }
         Relationships: [

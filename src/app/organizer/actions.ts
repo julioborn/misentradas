@@ -316,3 +316,65 @@ export async function removeEventStaff(eventId: string, staffId: string) {
   revalidatePath(`/organizer/events/${eventId}/staff`);
   redirect(`/organizer/events/${eventId}/staff?removed=1`);
 }
+
+export async function generateManualTicket(eventId: string, formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  const admin = createAdminClient();
+
+  const { data: event } = await admin
+    .from("events")
+    .select("id, precio, stock_disponible, organizer_id")
+    .eq("id", eventId)
+    .single();
+
+  if (!event || event.organizer_id !== user.id) {
+    redirect("/organizer/dashboard");
+  }
+
+  if (event.stock_disponible < 1) {
+    redirect(`/organizer/events/${eventId}/manual?error=sin_stock`);
+  }
+
+  const nota = String(formData.get("nombre") ?? "").trim() || null;
+
+  const { data: ticket, error } = await admin
+    .from("tickets")
+    .insert({
+      event_id: eventId,
+      buyer_id: null,
+      estado: "confirmed",
+      metodo_pago: "manual",
+      nota,
+    })
+    .select("id")
+    .single();
+
+  if (error || !ticket) {
+    redirect(`/organizer/events/${eventId}/manual?error=no_se_pudo_generar`);
+  }
+
+  await admin.from("payments").insert({
+    ticket_id: ticket.id,
+    amount: event.precio,
+    platform_fee: 0,
+    organizer_amount: event.precio,
+    estado: "approved",
+  });
+
+  await admin
+    .from("events")
+    .update({ stock_disponible: event.stock_disponible - 1 })
+    .eq("id", eventId);
+
+  revalidatePath("/organizer/dashboard");
+  revalidatePath(`/organizer/events/${eventId}/sales`);
+  redirect(`/tickets/${ticket.id}`);
+}

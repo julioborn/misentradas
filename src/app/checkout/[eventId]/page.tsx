@@ -19,6 +19,16 @@ export default async function CheckoutPage({
     );
   }
 
+  const { data: event } = await supabase
+    .from("events")
+    .select("organizer_id")
+    .eq("id", eventId)
+    .single();
+
+  if (event?.organizer_id === user!.id) {
+    redirect(`/organizer/events/${eventId}/manual`);
+  }
+
   return (
     <div className="py-6">
       <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">

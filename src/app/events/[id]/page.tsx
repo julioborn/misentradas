@@ -26,6 +26,8 @@ export default async function EventDetailPage({
 
   if (!event) notFound();
 
+  const isOwnEvent = Boolean(user) && user!.id === event.organizer_id;
+
   const { data: organizer } = await supabase
     .from("organizer_public")
     .select("nombre, avatar_url")
@@ -100,7 +102,15 @@ export default async function EventDetailPage({
         </div>
       </TicketStub>
 
-      {event.activo && !soldOut ? (
+      {isOwnEvent ? (
+        <Link
+          href={`/organizer/events/${event.id}/manual`}
+          className="mt-4 flex items-center justify-center gap-2 rounded-full border border-violet/40 text-violet py-2.5 font-semibold hover:bg-violet/10"
+        >
+          <Ticket className="size-4" />
+          Generar entrada
+        </Link>
+      ) : event.activo && !soldOut ? (
         <Link
           href={
             user

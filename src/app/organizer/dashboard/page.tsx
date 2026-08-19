@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDays, Link2, Pencil, Plus, ScanLine, Ticket, Users } from "lucide-react";
+import {
+  Banknote,
+  CalendarDays,
+  Link2,
+  Pencil,
+  Plus,
+  ScanLine,
+  Ticket,
+  Users,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
 import { formatDate } from "@/lib/date";
@@ -131,6 +140,13 @@ export default async function OrganizerDashboardPage({
                         Inactivo
                       </span>
                     )}
+                    <Link
+                      href={`/organizer/events/${event.id}/manual`}
+                      aria-label="Generar entrada manual"
+                      className="text-haze hover:text-violet"
+                    >
+                      <Banknote className="size-4" />
+                    </Link>
                     <Link
                       href={`/scan/${event.id}`}
                       aria-label="Escanear entradas"

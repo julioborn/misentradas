@@ -33,6 +33,12 @@ export async function POST(request: Request) {
   if (!event || !event.activo) {
     return NextResponse.json({ error: "Evento no disponible" }, { status: 404 });
   }
+  if (event.organizer_id === user.id) {
+    return NextResponse.json(
+      { error: "No podés comprar una entrada a tu propio evento" },
+      { status: 403 }
+    );
+  }
   if (event.stock_disponible < cantidad) {
     return NextResponse.json({ error: "No hay suficiente stock" }, { status: 409 });
   }
