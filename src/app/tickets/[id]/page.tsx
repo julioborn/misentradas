@@ -56,7 +56,7 @@ export default async function TicketDetailPage({
   return (
     <div className="py-6">
       {ticket.events?.imagen_url && (
-        <div className="-mx-4 w-[calc(100%+2rem)] aspect-[4/5] bg-surface mb-4 overflow-hidden">
+        <div className="aspect-video bg-surface rounded-xl overflow-hidden mb-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={ticket.events.imagen_url}
