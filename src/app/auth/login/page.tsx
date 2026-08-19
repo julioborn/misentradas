@@ -1,14 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { TicketStub } from "@/components/ticket-stub";
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +55,9 @@ export default function LoginPage() {
       .eq("id", data.user.id)
       .single();
 
-    router.push(profile?.rol === "organizer" ? "/organizer/dashboard" : "/");
+    router.push(
+      redirectTo || (profile?.rol === "organizer" ? "/organizer/dashboard" : "/")
+    );
     router.refresh();
   }
 
@@ -113,7 +125,14 @@ export default function LoginPage() {
 
       <p className="text-sm text-haze mt-6 text-center">
         ¿No tenés cuenta?{" "}
-        <Link href="/auth/register" className="text-lime font-medium">
+        <Link
+          href={
+            redirectTo
+              ? `/auth/register?redirect=${encodeURIComponent(redirectTo)}`
+              : "/auth/register"
+          }
+          className="text-lime font-medium"
+        >
           Registrate
         </Link>
       </p>

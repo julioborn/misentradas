@@ -12,6 +12,9 @@ export default async function EventDetailPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: event } = await supabase
     .from("events")
@@ -99,7 +102,13 @@ export default async function EventDetailPage({
 
       {event.activo && !soldOut ? (
         <Link
-          href={`/checkout/${event.id}`}
+          href={
+            user
+              ? `/checkout/${event.id}`
+              : `/auth/login?redirect=${encodeURIComponent(
+                  `/checkout/${event.id}`
+                )}`
+          }
           className="mt-4 flex items-center justify-center gap-2 rounded-full bg-violet text-ink py-2.5 font-semibold"
         >
           <Ticket className="size-4" />

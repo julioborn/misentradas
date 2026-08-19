@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, PartyPopper, Store } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { TicketStub } from "@/components/ticket-stub";
@@ -10,7 +10,17 @@ import { TicketStub } from "@/components/ticket-stub";
 type Rol = "buyer" | "organizer";
 
 export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [rol, setRol] = useState<Rol>("buyer");
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -45,7 +55,9 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push(rol === "organizer" ? "/organizer/dashboard" : "/");
+    router.push(
+      redirectTo || (rol === "organizer" ? "/organizer/dashboard" : "/")
+    );
     router.refresh();
   }
 
@@ -63,7 +75,14 @@ export default function RegisterPage() {
             Te enviamos un link de confirmación a{" "}
             <strong className="text-lime">{email}</strong>. Abrilo para
             activar tu cuenta y después ingresá desde{" "}
-            <Link href="/auth/login" className="text-violet font-medium">
+            <Link
+              href={
+                redirectTo
+                  ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}`
+                  : "/auth/login"
+              }
+              className="text-violet font-medium"
+            >
               acá
             </Link>
             .
@@ -181,7 +200,14 @@ export default function RegisterPage() {
 
       <p className="text-sm text-haze mt-6 text-center">
         ¿Ya tenés cuenta?{" "}
-        <Link href="/auth/login" className="text-lime font-medium">
+        <Link
+          href={
+            redirectTo
+              ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}`
+              : "/auth/login"
+          }
+          className="text-lime font-medium"
+        >
           Ingresá
         </Link>
       </p>
