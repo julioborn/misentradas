@@ -13,7 +13,7 @@ const ESTADO_LABEL: Record<string, string> = {
 const ESTADO_CLASS: Record<string, string> = {
   confirmed: "bg-lime/15 text-lime",
   used: "bg-white/5 text-haze",
-  cancelled: "bg-magenta/15 text-magenta",
+  cancelled: "bg-violet/15 text-violet",
   pending_cash: "bg-amber-400/15 text-amber-300",
 };
 

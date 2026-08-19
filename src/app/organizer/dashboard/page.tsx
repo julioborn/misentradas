@@ -30,7 +30,7 @@ export default async function OrganizerDashboardPage() {
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Panel organizador
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
@@ -59,7 +59,7 @@ export default async function OrganizerDashboardPage() {
 
       <Link
         href="/organizer/events/new"
-        className="flex items-center justify-center gap-2 rounded-full bg-magenta text-ink py-2.5 font-semibold mb-6"
+        className="flex items-center justify-center gap-2 rounded-full bg-violet text-ink py-2.5 font-semibold mb-6"
       >
         <Plus className="size-4" />
         Crear evento

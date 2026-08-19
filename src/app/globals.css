@@ -3,7 +3,7 @@
 :root {
   --color-ink: #0b0a12;
   --color-surface: #17131f;
-  --color-magenta: #ff2e7e;
+  --color-violet: #7c5cfa;
   --color-lime: #c8ff4d;
   --color-paper: #f5f1fa;
   --color-haze: #948ba8;
@@ -12,7 +12,7 @@
 @theme inline {
   --color-ink: var(--color-ink);
   --color-surface: var(--color-surface);
-  --color-magenta: var(--color-magenta);
+  --color-violet: var(--color-violet);
   --color-lime: var(--color-lime);
   --color-paper: var(--color-paper);
   --color-haze: var(--color-haze);

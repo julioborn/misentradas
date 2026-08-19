@@ -51,7 +51,7 @@ export default function LoginPage() {
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Admisión
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
@@ -74,7 +74,7 @@ export default function LoginPage() {
               disabled={loading}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta disabled:opacity-50"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet disabled:opacity-50"
               placeholder="vos@email.com"
             />
           </div>
@@ -93,17 +93,17 @@ export default function LoginPage() {
               disabled={loading}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta disabled:opacity-50"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet disabled:opacity-50"
               placeholder="••••••••"
             />
           </div>
 
-          {error && <p className="text-sm text-magenta">{error}</p>}
+          {error && <p className="text-sm text-violet">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-full bg-magenta text-ink py-2.5 font-semibold disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-full bg-violet text-ink py-2.5 font-semibold disabled:opacity-60"
           >
             {loading && <Loader2 className="size-4 animate-spin" />}
             {loading ? "Ingresando..." : "Ingresar"}

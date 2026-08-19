@@ -42,7 +42,7 @@ export default function CheckoutPage({
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Paso final
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
@@ -81,12 +81,12 @@ export default function CheckoutPage({
         </div>
       </TicketStub>
 
-      {error && <p className="text-sm text-magenta mb-4">{error}</p>}
+      {error && <p className="text-sm text-violet mb-4">{error}</p>}
 
       <button
         onClick={handlePagar}
         disabled={loading}
-        className="flex items-center justify-center gap-2 w-full rounded-full bg-magenta text-ink py-2.5 font-semibold disabled:opacity-60"
+        className="flex items-center justify-center gap-2 w-full rounded-full bg-violet text-ink py-2.5 font-semibold disabled:opacity-60"
       >
         {loading && <Loader2 className="size-4 animate-spin" />}
         {loading ? "Redirigiendo a MercadoPago..." : "Pagar con MercadoPago"}

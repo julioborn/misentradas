@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Ticket, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/types";
 
@@ -54,8 +55,14 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-10 border-b border-white/10 bg-ink/90 backdrop-blur">
       <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Ticket className="size-5 text-magenta" />
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image
+            src="/logo.png"
+            alt=""
+            width={30}
+            height={30}
+            className="rounded-lg"
+          />
           <span className="font-display text-xl tracking-wide uppercase">
             Mis Entradas
           </span>
@@ -74,7 +81,7 @@ export function Navbar() {
             <button
               onClick={handleLogout}
               aria-label="Cerrar sesión"
-              className="text-haze hover:text-magenta"
+              className="text-haze hover:text-violet"
             >
               <LogOut className="size-4" />
             </button>
@@ -86,7 +93,7 @@ export function Navbar() {
             </Link>
             <Link
               href="/auth/register"
-              className="rounded-full bg-magenta text-ink font-semibold px-4 py-1.5 hover:brightness-110"
+              className="rounded-full bg-violet text-ink font-semibold px-4 py-1.5 hover:brightness-110"
             >
               Registrarme
             </Link>

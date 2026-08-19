@@ -76,7 +76,7 @@ export default async function EventDetailPage({
       {event.activo && !soldOut ? (
         <Link
           href={`/checkout/${event.id}`}
-          className="mt-4 flex items-center justify-center gap-2 rounded-full bg-magenta text-ink py-2.5 font-semibold"
+          className="mt-4 flex items-center justify-center gap-2 rounded-full bg-violet text-ink py-2.5 font-semibold"
         >
           <Ticket className="size-4" />
           Comprar entrada

@@ -63,7 +63,7 @@ export default function RegisterPage() {
             Te enviamos un link de confirmación a{" "}
             <strong className="text-lime">{email}</strong>. Abrilo para
             activar tu cuenta y después ingresá desde{" "}
-            <Link href="/auth/login" className="text-magenta font-medium">
+            <Link href="/auth/login" className="text-violet font-medium">
               acá
             </Link>
             .
@@ -75,7 +75,7 @@ export default function RegisterPage() {
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Alta de cuenta
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
@@ -91,7 +91,7 @@ export default function RegisterPage() {
           onClick={() => setRol("buyer")}
           className={`flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors ${
             rol === "buyer"
-              ? "border-magenta bg-magenta/10 text-paper"
+              ? "border-violet bg-violet/10 text-paper"
               : "border-white/10 bg-surface text-haze"
           }`}
         >
@@ -103,7 +103,7 @@ export default function RegisterPage() {
           onClick={() => setRol("organizer")}
           className={`flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors ${
             rol === "organizer"
-              ? "border-magenta bg-magenta/10 text-paper"
+              ? "border-violet bg-violet/10 text-paper"
               : "border-white/10 bg-surface text-haze"
           }`}
         >
@@ -125,7 +125,7 @@ export default function RegisterPage() {
               disabled={loading}
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta disabled:opacity-50"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet disabled:opacity-50"
               placeholder="Tu nombre"
             />
           </div>
@@ -141,7 +141,7 @@ export default function RegisterPage() {
               disabled={loading}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta disabled:opacity-50"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet disabled:opacity-50"
               placeholder="vos@email.com"
             />
           </div>
@@ -161,17 +161,17 @@ export default function RegisterPage() {
               disabled={loading}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta disabled:opacity-50"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet disabled:opacity-50"
               placeholder="Mínimo 6 caracteres"
             />
           </div>
 
-          {error && <p className="text-sm text-magenta">{error}</p>}
+          {error && <p className="text-sm text-violet">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-full bg-magenta text-ink py-2.5 font-semibold disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-full bg-violet text-ink py-2.5 font-semibold disabled:opacity-60"
           >
             {loading && <Loader2 className="size-4 animate-spin" />}
             {loading ? "Creando cuenta..." : "Crear cuenta"}

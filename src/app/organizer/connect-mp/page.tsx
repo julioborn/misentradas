@@ -31,7 +31,7 @@ export default async function ConnectMpPage({
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Panel organizador
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
@@ -47,7 +47,7 @@ export default async function ConnectMpPage({
         </p>
       )}
       {error && (
-        <p className="text-sm text-magenta bg-magenta/10 border border-magenta/20 rounded-lg px-3 py-2 mb-4">
+        <p className="text-sm text-violet bg-violet/10 border border-violet/20 rounded-lg px-3 py-2 mb-4">
           No pudimos conectar tu cuenta. Intentá de nuevo.
         </p>
       )}
@@ -67,7 +67,7 @@ export default async function ConnectMpPage({
       ) : (
         <Link
           href="/api/organizer/connect-mp/start"
-          className="flex items-center justify-center gap-2 rounded-full bg-magenta text-ink py-2.5 font-semibold"
+          className="flex items-center justify-center gap-2 rounded-full bg-violet text-ink py-2.5 font-semibold"
         >
           <Link2 className="size-4" />
           Conectar MercadoPago

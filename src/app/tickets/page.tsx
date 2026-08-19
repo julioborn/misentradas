@@ -14,7 +14,7 @@ const ESTADO_LABEL: Record<string, string> = {
 const ESTADO_CLASS: Record<string, string> = {
   confirmed: "bg-lime/15 text-lime",
   used: "bg-white/5 text-haze",
-  cancelled: "bg-magenta/15 text-magenta",
+  cancelled: "bg-violet/15 text-violet",
   pending_cash: "bg-amber-400/15 text-amber-300",
 };
 
@@ -34,7 +34,7 @@ export default async function TicketsPage() {
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Tu billetera
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">

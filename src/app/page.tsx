@@ -14,7 +14,7 @@ export default async function HomePage() {
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Próximamente
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">

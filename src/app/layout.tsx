@@ -22,6 +22,10 @@ const anton = Anton({
 export const metadata: Metadata = {
   title: "Mis Entradas",
   description: "Entradas para eventos y fiestas, con QR al instante",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -31,7 +31,7 @@ export default async function NewEventPage({
 
   return (
     <div className="py-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+      <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Panel organizador
       </p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
@@ -42,7 +42,7 @@ export default async function NewEventPage({
       </p>
 
       {error && (
-        <p className="text-sm text-magenta bg-magenta/10 border border-magenta/20 rounded-lg px-3 py-2 mb-4">
+        <p className="text-sm text-violet bg-violet/10 border border-violet/20 rounded-lg px-3 py-2 mb-4">
           {ERROR_LABEL[error] ?? "Algo salió mal. Intentá de nuevo."}
         </p>
       )}
@@ -58,7 +58,7 @@ export default async function NewEventPage({
               name="nombre"
               type="text"
               required
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet"
               placeholder="Fiesta Neón"
             />
           </div>
@@ -74,7 +74,7 @@ export default async function NewEventPage({
               id="descripcion"
               name="descripcion"
               rows={3}
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta resize-none"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet resize-none"
               placeholder="Line up, dress code, lo que quieras contar"
             />
           </div>
@@ -88,7 +88,7 @@ export default async function NewEventPage({
               name="fecha"
               type="datetime-local"
               required
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper focus:outline-none focus:ring-2 focus:ring-magenta"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper focus:outline-none focus:ring-2 focus:ring-violet"
             />
           </div>
 
@@ -100,7 +100,7 @@ export default async function NewEventPage({
               id="lugar"
               name="lugar"
               type="text"
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet"
               placeholder="Costanera 1234, CABA"
             />
           </div>
@@ -117,7 +117,7 @@ export default async function NewEventPage({
                 min="0"
                 step="0.01"
                 required
-                className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta"
+                className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet"
                 placeholder="8500"
               />
             </div>
@@ -135,7 +135,7 @@ export default async function NewEventPage({
                 min="1"
                 step="1"
                 required
-                className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta"
+                className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet"
                 placeholder="200"
               />
             </div>
@@ -152,14 +152,14 @@ export default async function NewEventPage({
               id="imagen_url"
               name="imagen_url"
               type="url"
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-magenta"
+              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet"
               placeholder="https://..."
             />
           </div>
 
           <button
             type="submit"
-            className="rounded-full bg-magenta text-ink py-2.5 font-semibold"
+            className="rounded-full bg-violet text-ink py-2.5 font-semibold"
           >
             Publicar evento
           </button>
