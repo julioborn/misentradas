@@ -20,11 +20,17 @@ const anton = Anton({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://www.misentradas.com.ar"
+  ),
   title: "Mis Entradas",
   description: "Entradas para eventos y fiestas, con QR al instante",
-  icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+  openGraph: {
+    title: "Mis Entradas",
+    description: "Entradas para eventos y fiestas, con QR al instante",
+    siteName: "Mis Entradas",
+    locale: "es_AR",
+    type: "website",
   },
 };
 
