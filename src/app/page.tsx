@@ -1,8 +1,12 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { CalendarDays, MapPin, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
 import { LocationFilter } from "@/components/location-filter";
+import { LocationPrompt } from "@/components/location-prompt";
+import { LOCATION_COOKIE, parseLocationCookie } from "@/lib/location-preference";
 import { formatDateTime } from "@/lib/date";
 
 export default async function HomePage({
@@ -11,6 +15,18 @@ export default async function HomePage({
   searchParams: Promise<{ provincia?: string; localidad?: string }>;
 }) {
   const { provincia, localidad } = await searchParams;
+  const cookieStore = await cookies();
+  const savedLocation = parseLocationCookie(
+    cookieStore.get(LOCATION_COOKIE)?.value
+  );
+
+  if (provincia === undefined && localidad === undefined && savedLocation) {
+    const params = new URLSearchParams();
+    params.set("provincia", savedLocation.provincia);
+    if (savedLocation.localidad) params.set("localidad", savedLocation.localidad);
+    redirect(`/?${params.toString()}`);
+  }
+
   const supabase = await createClient();
 
   let query = supabase
@@ -52,6 +68,7 @@ export default async function HomePage({
         Comprá tu entrada y recibí el QR al instante.
       </p>
 
+      <LocationPrompt hasSavedLocation={Boolean(savedLocation)} />
       <LocationFilter />
 
       {!events || events.length === 0 ? (
@@ -67,6 +84,11 @@ export default async function HomePage({
         </TicketStub>
       ) : (
         <div className="flex flex-col gap-4">
+          {(localidad || provincia) && (
+            <p className="font-mono text-xs uppercase tracking-widest text-haze -mb-1">
+              Eventos en {localidad || provincia}
+            </p>
+          )}
           {events.map((event) => {
             const organizer = organizerById.get(event.organizer_id);
             return (

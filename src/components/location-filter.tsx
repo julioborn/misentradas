@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LocateFixed, X } from "lucide-react";
+import {
+  clearLocationCookie,
+  resolveLocationFromCoords,
+  writeLocationCookie,
+} from "@/lib/geo-client";
 
 type GeoItem = { id: string; nombre: string };
 
@@ -45,7 +50,14 @@ export function LocationFilter() {
       });
   }, [provincia]);
 
-  function applyFilter(nextProvincia: string, nextLocalidad: string) {
+  function applyFilter(
+    nextProvincia: string,
+    nextLocalidad: string,
+    persist = true
+  ) {
+    if (persist && nextProvincia) {
+      writeLocationCookie({ provincia: nextProvincia, localidad: nextLocalidad });
+    }
     const params = new URLSearchParams();
     if (nextProvincia) params.set("provincia", nextProvincia);
     if (nextLocalidad) params.set("localidad", nextLocalidad);
@@ -64,25 +76,23 @@ export function LocationFilter() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
-          const res = await fetch(
-            `/api/georef/ubicacion?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+          const resolved = await resolveLocationFromCoords(
+            pos.coords.latitude,
+            pos.coords.longitude
           );
-          const data = await res.json();
-          const prov = data.ubicacion?.provincia?.nombre ?? "";
-          const muni = data.ubicacion?.municipio?.nombre ?? "";
 
-          if (!prov) {
-            setNotice("No pudimos determinar tu provincia.");
+          if (!resolved) {
+            setNotice("No pudimos determinar tu ubicación.");
             return;
           }
 
-          setProvincia(prov);
-          setLocalidad("");
-          applyFilter(prov, "");
+          setProvincia(resolved.provincia);
+          setLocalidad(resolved.localidad);
+          applyFilter(resolved.provincia, resolved.localidad);
           setNotice(
-            muni
-              ? `Te ubicamos cerca de ${muni}, ${prov}. Elegí tu localidad exacta si hace falta.`
-              : `Te ubicamos en ${prov}. Elegí tu localidad si hace falta.`
+            resolved.localidad
+              ? `Te ubicamos en ${resolved.localidad}, ${resolved.provincia}.`
+              : `Te ubicamos en ${resolved.provincia}. No encontramos tu localidad exacta, elegila vos.`
           );
         } catch {
           setNotice("No pudimos determinar tu ubicación.");
@@ -102,7 +112,8 @@ export function LocationFilter() {
     setLocalidad("");
     setLocalidades([]);
     setNotice(null);
-    applyFilter("", "");
+    clearLocationCookie();
+    applyFilter("", "", false);
   }
 
   const hasFilter = Boolean(currentProvincia || currentLocalidad);
@@ -138,8 +149,13 @@ export function LocationFilter() {
             const value = e.target.value;
             setProvincia(value);
             setLocalidad("");
-            if (!value) setLocalidades([]);
-            applyFilter(value, "");
+            if (!value) {
+              setLocalidades([]);
+              clearLocationCookie();
+              applyFilter("", "", false);
+            } else {
+              applyFilter(value, "");
+            }
           }}
           className="rounded-lg bg-ink border border-white/10 px-3 py-2 text-sm text-paper focus:outline-none focus:ring-2 focus:ring-violet"
         >
