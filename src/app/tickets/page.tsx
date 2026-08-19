@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDays, Ticket } from "lucide-react";
+import { CalendarDays, MapPin, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
 import { formatDate } from "@/lib/date";
@@ -29,7 +29,9 @@ export default async function TicketsPage() {
 
   const { data: tickets } = await supabase
     .from("tickets")
-    .select("id, estado, created_at, events(nombre, fecha, lugar, organizer_id)")
+    .select(
+      "id, estado, created_at, events(nombre, fecha, lugar, imagen_url, organizer_id)"
+    )
     .eq("buyer_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -80,7 +82,17 @@ export default async function TicketsPage() {
             return (
               <Link key={ticket.id} href={`/tickets/${ticket.id}`} className="block">
                 <TicketStub className="hover:bg-surface/80 transition-colors">
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex gap-3">
+                    {ticket.events?.imagen_url && (
+                      <div className="size-16 shrink-0 rounded-lg overflow-hidden bg-ink">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={ticket.events.imagen_url}
+                          alt={ticket.events.nombre}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="font-display uppercase tracking-wide leading-tight">
                         {ticket.events?.nombre}
@@ -106,11 +118,23 @@ export default async function TicketsPage() {
                           </span>
                         </div>
                       )}
-                      <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
-                        <CalendarDays className="size-4 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-xs text-haze mt-1">
+                        <CalendarDays className="size-3.5 shrink-0" />
                         {ticket.events?.fecha && formatDate(ticket.events.fecha)}
                       </div>
+                      {ticket.events?.lugar && (
+                        <div className="flex items-center gap-1.5 text-xs text-haze mt-0.5">
+                          <MapPin className="size-3.5 shrink-0" />
+                          <span className="truncate">{ticket.events.lugar}</span>
+                        </div>
+                      )}
                     </div>
+                  </div>
+
+                  <div className="mt-3 pt-3 border-t border-dashed border-white/10 flex items-center justify-between">
+                    <span className="font-mono text-xs text-haze uppercase tracking-widest">
+                      Entrada
+                    </span>
                     <span
                       className={`text-xs font-medium rounded-full px-2.5 py-1 shrink-0 ${
                         ESTADO_CLASS[ticket.estado] ?? "bg-white/5 text-haze"
