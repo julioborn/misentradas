@@ -79,7 +79,7 @@ export default async function OrganizerProfilePage({
               type="file"
               accept="image/*"
               required
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper text-sm file:mr-3 file:rounded-full file:border-0 file:bg-violet file:text-ink file:px-3 file:py-1.5 file:font-semibold focus:outline-none focus:ring-2 focus:ring-violet"
+              className="w-full rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper text-sm file:mr-3 file:rounded-full file:border-0 file:bg-violet file:text-ink file:px-3 file:py-1.5 file:font-semibold focus:outline-none focus:ring-2 focus:ring-violet"
             />
             <button
               type="submit"

@@ -18,7 +18,7 @@ export function TicketStub({
         <span className="ticket-notch" />
         <span className="ticket-notch" />
       </div>
-      <div className="flex-1 border-l border-dashed border-white/15 px-4 py-4">
+      <div className="flex-1 min-w-0 border-l border-dashed border-white/15 px-4 py-4">
         {children}
       </div>
     </div>

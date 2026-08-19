@@ -177,7 +177,7 @@ export default async function EditEventPage({
               name="imagen"
               type="file"
               accept="image/*"
-              className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper text-sm file:mr-3 file:rounded-full file:border-0 file:bg-violet file:text-ink file:px-3 file:py-1.5 file:font-semibold focus:outline-none focus:ring-2 focus:ring-violet"
+              className="w-full rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper text-sm file:mr-3 file:rounded-full file:border-0 file:bg-violet file:text-ink file:px-3 file:py-1.5 file:font-semibold focus:outline-none focus:ring-2 focus:ring-violet"
             />
             <p className="text-xs text-haze">
               Subí una nueva solo si querés reemplazar la actual.
