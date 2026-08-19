@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { datetimeLocalValueToIso } from "@/lib/date";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -57,7 +58,7 @@ function parseEventFields(formData: FormData) {
     valid,
     nombre,
     descripcion: descripcion || null,
-    fecha: fecha ? new Date(fecha).toISOString() : null,
+    fecha: fecha ? datetimeLocalValueToIso(fecha) : null,
     lugar: lugar || null,
     precio,
     stockTotal,

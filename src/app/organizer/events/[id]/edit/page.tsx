@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateEvent } from "@/app/organizer/actions";
 import { TicketStub } from "@/components/ticket-stub";
+import { toDatetimeLocalValue } from "@/lib/date";
 
 const ERROR_LABEL: Record<string, string> = {
   datos_invalidos: "Revisá los datos: falta algo o el precio/stock no es válido.",
@@ -9,14 +10,6 @@ const ERROR_LABEL: Record<string, string> = {
     "No podés bajar el stock por debajo de las entradas ya vendidas.",
   no_se_pudo_guardar: "No pudimos guardar los cambios. Intentá de nuevo.",
 };
-
-function toDatetimeLocal(iso: string) {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
-  )}:${pad(d.getMinutes())}`;
-}
 
 export default async function EditEventPage({
   params,
@@ -104,7 +97,7 @@ export default async function EditEventPage({
               name="fecha"
               type="datetime-local"
               required
-              defaultValue={toDatetimeLocal(event.fecha)}
+              defaultValue={toDatetimeLocalValue(event.fecha)}
               className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper focus:outline-none focus:ring-2 focus:ring-violet"
             />
           </div>
