@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDays, Link2, Pencil, Plus, Ticket } from "lucide-react";
+import { CalendarDays, Link2, Pencil, Plus, ScanLine, Ticket, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
 import { formatDate } from "@/lib/date";
@@ -125,12 +125,26 @@ export default async function OrganizerDashboardPage({
                       {formatDate(event.fecha)}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-3 shrink-0">
                     {!event.activo && (
                       <span className="text-xs font-medium rounded-full px-2.5 py-1 bg-white/5 text-haze">
                         Inactivo
                       </span>
                     )}
+                    <Link
+                      href={`/scan/${event.id}`}
+                      aria-label="Escanear entradas"
+                      className="text-haze hover:text-violet"
+                    >
+                      <ScanLine className="size-4" />
+                    </Link>
+                    <Link
+                      href={`/organizer/events/${event.id}/staff`}
+                      aria-label="Staff de entrada"
+                      className="text-haze hover:text-violet"
+                    >
+                      <Users className="size-4" />
+                    </Link>
                     <Link
                       href={`/organizer/events/${event.id}/edit`}
                       aria-label="Editar evento"

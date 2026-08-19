@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { datetimeLocalValueToIso } from "@/lib/date";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
@@ -225,4 +226,93 @@ export async function updateEvent(eventId: string, formData: FormData) {
 
   revalidatePath("/organizer/dashboard");
   redirect("/organizer/dashboard?success=evento_actualizado");
+}
+
+async function assertOwnsEvent(
+  supabase: SupabaseServerClient,
+  eventId: string,
+  userId: string
+) {
+  const { data: event } = await supabase
+    .from("events")
+    .select("id")
+    .eq("id", eventId)
+    .eq("organizer_id", userId)
+    .single();
+
+  return Boolean(event);
+}
+
+export async function addEventStaff(eventId: string, formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  if (!(await assertOwnsEvent(supabase, eventId, user.id))) {
+    redirect("/organizer/dashboard");
+  }
+
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+
+  if (!email) {
+    redirect(`/organizer/events/${eventId}/staff?error=email_requerido`);
+  }
+
+  const admin = createAdminClient();
+
+  const { data: staffProfile } = await admin
+    .from("profiles")
+    .select("id")
+    .ilike("email", email)
+    .single();
+
+  if (!staffProfile) {
+    redirect(`/organizer/events/${eventId}/staff?error=usuario_no_encontrado`);
+  }
+
+  const { error } = await admin
+    .from("event_staff")
+    .insert({ event_id: eventId, user_id: staffProfile.id });
+
+  if (error) {
+    redirect(
+      `/organizer/events/${eventId}/staff?error=${
+        error.code === "23505" ? "ya_asignado" : "no_se_pudo_agregar"
+      }`
+    );
+  }
+
+  revalidatePath(`/organizer/events/${eventId}/staff`);
+  redirect(`/organizer/events/${eventId}/staff?success=1`);
+}
+
+export async function removeEventStaff(eventId: string, staffId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  if (!(await assertOwnsEvent(supabase, eventId, user.id))) {
+    redirect("/organizer/dashboard");
+  }
+
+  await supabase
+    .from("event_staff")
+    .delete()
+    .eq("id", staffId)
+    .eq("event_id", eventId);
+
+  revalidatePath(`/organizer/events/${eventId}/staff`);
+  redirect(`/organizer/events/${eventId}/staff?removed=1`);
 }
