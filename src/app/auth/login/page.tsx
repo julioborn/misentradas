@@ -26,7 +26,15 @@ export default function LoginPage() {
     setLoading(false);
 
     if (error) {
-      setError("Email o contraseña incorrectos.");
+      if (error.message.includes("Email not confirmed")) {
+        setError(
+          "Todavía no confirmaste tu email. Revisá tu casilla de correo (y spam)."
+        );
+      } else if (error.message.includes("Invalid login credentials")) {
+        setError("Email o contraseña incorrectos.");
+      } else {
+        setError(error.message);
+      }
       return;
     }
 

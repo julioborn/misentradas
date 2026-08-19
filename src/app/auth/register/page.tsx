@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [confirmEmailSent, setConfirmEmailSent] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -23,7 +24,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { nombre, rol } },
@@ -36,8 +37,31 @@ export default function RegisterPage() {
       return;
     }
 
+    // Sin sesión activa significa que el proyecto exige confirmar el
+    // email antes de poder iniciar sesión.
+    if (!data.session) {
+      setConfirmEmailSent(true);
+      return;
+    }
+
     router.push("/");
     router.refresh();
+  }
+
+  if (confirmEmailSent) {
+    return (
+      <div className="py-8">
+        <h1 className="text-2xl font-bold mb-1">Revisá tu email</h1>
+        <p className="text-neutral-500 text-sm">
+          Te enviamos un link de confirmación a <strong>{email}</strong>.
+          Abrilo para activar tu cuenta y después ingresá desde{" "}
+          <Link href="/auth/login" className="text-violet-600 font-medium">
+            acá
+          </Link>
+          .
+        </p>
+      </div>
+    );
   }
 
   return (
