@@ -46,3 +46,9 @@ next-env.d.ts
 # Mac (iOS) and Windows (Android) setups don't clobber each other.
 /ios
 /android
+
+# Firebase: google-services.json / GoogleService-Info.plist under
+# /firebase are safe to commit (no secrets), but never commit a
+# downloaded service account key if one ends up in the repo.
+*service-account*.json
+*firebase-adminsdk*.json

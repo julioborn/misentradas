@@ -6,6 +6,7 @@ import {
 } from "mercadopago";
 import { getPlatformMpConfig } from "@/lib/mercadopago";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendPushToUsers } from "@/lib/push-send";
 
 type PaymentMetadata = {
   event_id?: string;
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
 
     const { data: event } = await admin
       .from("events")
-      .select("id, precio, stock_disponible")
+      .select("id, nombre, precio, stock_disponible, organizer_id")
       .eq("id", metadata.event_id)
       .single();
 
@@ -84,6 +85,8 @@ export async function POST(request: Request) {
     const feePercentage = Number(process.env.MP_PLATFORM_FEE_PERCENTAGE ?? "5");
     const unitFee = Math.round(event.precio * (feePercentage / 100) * 100) / 100;
     const unitOrganizerAmount = Math.round((event.precio - unitFee) * 100) / 100;
+
+    let ticketsCreadas = 0;
 
     for (let i = 0; i < metadata.cantidad; i++) {
       const { data: ticket } = await admin
@@ -99,6 +102,7 @@ export async function POST(request: Request) {
         .single();
 
       if (ticket) {
+        ticketsCreadas += 1;
         await admin.from("payments").insert({
           ticket_id: ticket.id,
           amount: event.precio,
@@ -116,6 +120,26 @@ export async function POST(request: Request) {
         stock_disponible: Math.max(event.stock_disponible - metadata.cantidad, 0),
       })
       .eq("id", metadata.event_id);
+
+    if (ticketsCreadas > 0) {
+      await sendPushToUsers([metadata.buyer_id], {
+        title: "¡Ya tenés tu entrada!",
+        body:
+          ticketsCreadas > 1
+            ? `Se confirmaron ${ticketsCreadas} entradas para ${event.nombre}.`
+            : `Se confirmó tu entrada para ${event.nombre}.`,
+        data: { url: "/tickets" },
+      });
+
+      await sendPushToUsers([event.organizer_id], {
+        title: "Nueva venta",
+        body:
+          ticketsCreadas > 1
+            ? `Vendiste ${ticketsCreadas} entradas de ${event.nombre}.`
+            : `Vendiste una entrada de ${event.nombre}.`,
+        data: { url: `/organizer/events/${event.id}/sales` },
+      });
+    }
 
     return NextResponse.json({ received: true });
   } catch (err) {

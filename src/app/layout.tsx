@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import { PushInit } from "@/components/push-init";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${anton.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-ink text-paper">
+        <PushInit />
         <Navbar />
         <main className="flex-1 w-full max-w-md mx-auto px-4 py-6">
           {children}

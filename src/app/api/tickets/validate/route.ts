@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendPushToUsers } from "@/lib/push-send";
 
 const REASON_MESSAGE: Record<string, string> = {
   not_found: "QR no reconocido.",
@@ -56,7 +57,9 @@ export async function POST(request: Request) {
 
   const { data: ticket } = await admin
     .from("tickets")
-    .select("id, estado, buyer:profiles!tickets_buyer_id_fkey(nombre, email)")
+    .select(
+      "id, estado, buyer_id, buyer:profiles!tickets_buyer_id_fkey(nombre, email)"
+    )
     .eq("event_id", eventId)
     .eq("qr_code", qrCode)
     .single();
@@ -96,6 +99,14 @@ export async function POST(request: Request) {
       { error: "No pudimos validar la entrada. Intentá de nuevo." },
       { status: 500 }
     );
+  }
+
+  if (ticket.buyer_id) {
+    await sendPushToUsers([ticket.buyer_id], {
+      title: "Entrada validada",
+      body: `Tu entrada para ${event.nombre} fue escaneada. ¡Disfrutá!`,
+      data: { url: `/tickets/${ticket.id}` },
+    });
   }
 
   return NextResponse.json({

@@ -71,6 +71,7 @@ export type Database = {
           organizer_id: string
           precio: number
           provincia: string | null
+          reminder_sent_at: string | null
           stock_disponible: number
           stock_total: number
         }
@@ -87,6 +88,7 @@ export type Database = {
           organizer_id: string
           precio: number
           provincia?: string | null
+          reminder_sent_at?: string | null
           stock_disponible: number
           stock_total: number
         }
@@ -103,6 +105,7 @@ export type Database = {
           organizer_id?: string
           precio?: number
           provincia?: string | null
+          reminder_sent_at?: string | null
           stock_disponible?: number
           stock_total?: number
         }
@@ -196,6 +199,45 @@ export type Database = {
           rol?: string
         }
         Relationships: []
+      }
+      push_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          platform: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          platform: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          platform?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "organizer_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tickets: {
         Row: {

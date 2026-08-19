@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { unregisterPush } from "@/lib/push-client";
 import type { Tables } from "@/lib/supabase/types";
 
 export function Navbar() {
@@ -59,6 +60,7 @@ export function Navbar() {
   }, []);
 
   async function handleLogout() {
+    await unregisterPush();
     const supabase = createClient();
     await supabase.auth.signOut();
     setMenuOpen(false);
