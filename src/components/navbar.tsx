@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/types";
 
@@ -77,6 +77,13 @@ export function Navbar() {
             )}
             <Link href="/tickets" className="text-haze hover:text-paper">
               Mis entradas
+            </Link>
+            <Link
+              href="/account"
+              aria-label="Mi cuenta"
+              className="text-haze hover:text-violet"
+            >
+              <User className="size-4" />
             </Link>
             <button
               onClick={handleLogout}
