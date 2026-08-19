@@ -52,39 +52,41 @@ export function Navbar() {
   }
 
   return (
-    <header className="border-b border-neutral-200 bg-white">
-      <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Ticket className="size-5 text-violet-600" />
-          Mis Entradas
+    <header className="sticky top-0 z-10 border-b border-white/10 bg-ink/90 backdrop-blur">
+      <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Ticket className="size-5 text-magenta" />
+          <span className="font-display text-xl tracking-wide uppercase">
+            Mis Entradas
+          </span>
         </Link>
 
         {profile === undefined ? null : profile ? (
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-4 text-sm">
             {profile.rol === "organizer" && (
-              <Link href="/organizer/dashboard" className="text-neutral-600">
+              <Link href="/organizer/dashboard" className="text-haze hover:text-paper">
                 Panel
               </Link>
             )}
-            <Link href="/tickets" className="text-neutral-600">
+            <Link href="/tickets" className="text-haze hover:text-paper">
               Mis entradas
             </Link>
             <button
               onClick={handleLogout}
               aria-label="Cerrar sesión"
-              className="text-neutral-400 hover:text-neutral-700"
+              className="text-haze hover:text-magenta"
             >
               <LogOut className="size-4" />
             </button>
           </div>
         ) : (
           <div className="flex items-center gap-3 text-sm">
-            <Link href="/auth/login" className="text-neutral-600">
+            <Link href="/auth/login" className="text-haze hover:text-paper">
               Ingresar
             </Link>
             <Link
               href="/auth/register"
-              className="rounded-md bg-violet-600 text-white px-3 py-1.5"
+              className="rounded-full bg-magenta text-ink font-semibold px-4 py-1.5 hover:brightness-110"
             >
               Registrarme
             </Link>

@@ -10,6 +10,13 @@ const ESTADO_LABEL: Record<string, string> = {
   cancelled: "Cancelada",
 };
 
+const ESTADO_CLASS: Record<string, string> = {
+  confirmed: "bg-lime/15 text-lime",
+  used: "bg-white/5 text-haze",
+  cancelled: "bg-magenta/15 text-magenta",
+  pending_cash: "bg-amber-400/15 text-amber-300",
+};
+
 export default async function TicketDetailPage({
   params,
 }: {
@@ -35,9 +42,11 @@ export default async function TicketDetailPage({
 
   return (
     <div className="py-8 flex flex-col items-center text-center">
-      <h1 className="text-xl font-bold">{ticket.events?.nombre}</h1>
+      <h1 className="font-display text-2xl uppercase tracking-wide">
+        {ticket.events?.nombre}
+      </h1>
 
-      <div className="flex items-center gap-1.5 text-sm text-neutral-500 mt-1">
+      <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
         <CalendarDays className="size-4" />
         {ticket.events?.fecha &&
           new Date(ticket.events.fecha).toLocaleString("es-AR", {
@@ -46,7 +55,7 @@ export default async function TicketDetailPage({
           })}
       </div>
       {ticket.events?.lugar && (
-        <div className="flex items-center gap-1.5 text-sm text-neutral-500 mt-0.5">
+        <div className="flex items-center gap-1.5 text-sm text-haze mt-0.5">
           <MapPin className="size-4" />
           {ticket.events.lugar}
         </div>
@@ -54,24 +63,20 @@ export default async function TicketDetailPage({
 
       <span
         className={`mt-3 text-xs font-medium rounded-full px-2.5 py-1 ${
-          ticket.estado === "confirmed"
-            ? "bg-green-50 text-green-700"
-            : ticket.estado === "used"
-              ? "bg-neutral-100 text-neutral-500"
-              : ticket.estado === "cancelled"
-                ? "bg-red-50 text-red-700"
-                : "bg-amber-50 text-amber-700"
+          ESTADO_CLASS[ticket.estado] ?? "bg-white/5 text-haze"
         }`}
       >
         {ESTADO_LABEL[ticket.estado] ?? ticket.estado}
       </span>
 
-      <div className="mt-6 rounded-2xl border border-neutral-200 bg-white p-4">
+      <div className="mt-6 rounded-2xl bg-paper p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={qrDataUrl} alt="Código QR de la entrada" className="size-64" />
       </div>
 
-      <p className="text-xs text-neutral-400 mt-3 break-all">{ticket.qr_code}</p>
+      <p className="font-mono text-xs text-haze mt-3 break-all tracking-wide">
+        {ticket.qr_code}
+      </p>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarDays, MapPin, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { TicketStub } from "@/components/ticket-stub";
 
 export default async function EventDetailPage({
   params,
@@ -25,7 +26,7 @@ export default async function EventDetailPage({
 
   return (
     <div className="py-6">
-      <div className="aspect-video bg-neutral-100 rounded-xl overflow-hidden mb-4">
+      <div className="aspect-video bg-surface rounded-xl overflow-hidden mb-4">
         {event.imagen_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -36,9 +37,11 @@ export default async function EventDetailPage({
         )}
       </div>
 
-      <h1 className="text-2xl font-bold">{event.nombre}</h1>
+      <h1 className="font-display text-2xl uppercase tracking-wide">
+        {event.nombre}
+      </h1>
 
-      <div className="flex items-center gap-1.5 text-sm text-neutral-500 mt-2">
+      <div className="flex items-center gap-1.5 text-sm text-haze mt-2">
         <CalendarDays className="size-4" />
         {new Date(event.fecha).toLocaleString("es-AR", {
           dateStyle: "medium",
@@ -46,32 +49,34 @@ export default async function EventDetailPage({
         })}
       </div>
       {event.lugar && (
-        <div className="flex items-center gap-1.5 text-sm text-neutral-500 mt-1">
+        <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
           <MapPin className="size-4" />
           {event.lugar}
         </div>
       )}
 
       {event.descripcion && (
-        <p className="text-sm text-neutral-700 mt-4 whitespace-pre-line">
+        <p className="text-sm text-paper/80 mt-4 whitespace-pre-line">
           {event.descripcion}
         </p>
       )}
 
-      <div className="mt-6 flex items-center justify-between rounded-xl border border-neutral-200 bg-white px-4 py-3">
-        <div>
-          <p className="text-xs text-neutral-500">Precio</p>
-          <p className="text-xl font-bold text-violet-600">${event.precio}</p>
+      <TicketStub className="mt-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-haze">Precio</p>
+            <p className="font-mono text-2xl text-lime">${event.precio}</p>
+          </div>
+          <p className="text-sm text-haze">
+            {soldOut ? "Agotado" : `${event.stock_disponible} disponibles`}
+          </p>
         </div>
-        <p className="text-sm text-neutral-500">
-          {soldOut ? "Agotado" : `${event.stock_disponible} disponibles`}
-        </p>
-      </div>
+      </TicketStub>
 
       {event.activo && !soldOut ? (
         <Link
           href={`/checkout/${event.id}`}
-          className="mt-4 flex items-center justify-center gap-2 rounded-md bg-violet-600 text-white py-2.5 font-medium"
+          className="mt-4 flex items-center justify-center gap-2 rounded-full bg-magenta text-ink py-2.5 font-semibold"
         >
           <Ticket className="size-4" />
           Comprar entrada
@@ -79,7 +84,7 @@ export default async function EventDetailPage({
       ) : (
         <button
           disabled
-          className="mt-4 w-full rounded-md bg-neutral-200 text-neutral-500 py-2.5 font-medium"
+          className="mt-4 w-full rounded-full bg-surface text-haze py-2.5 font-medium"
         >
           {soldOut ? "Agotado" : "No disponible"}
         </button>

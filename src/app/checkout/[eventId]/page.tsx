@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, use } from "react";
-import { Minus, Plus } from "lucide-react";
+import { Loader2, Minus, Plus } from "lucide-react";
+import { TicketStub } from "@/components/ticket-stub";
 
 export default function CheckoutPage({
   params,
@@ -40,44 +41,54 @@ export default function CheckoutPage({
   }
 
   return (
-    <div className="py-8">
-      <h1 className="text-2xl font-bold mb-1">Checkout</h1>
-      <p className="text-neutral-500 text-sm mb-6">
+    <div className="py-6">
+      <p className="font-mono text-xs tracking-[0.3em] text-magenta uppercase mb-2">
+        Paso final
+      </p>
+      <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
+        Checkout
+      </h1>
+      <p className="text-haze text-sm mb-6">
         Elegí cuántas entradas querés comprar.
       </p>
 
-      <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white px-4 py-4 mb-6">
-        <span className="font-medium">Cantidad</span>
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => setCantidad((c) => Math.max(1, c - 1))}
-            className="rounded-full border border-neutral-300 p-1.5 disabled:opacity-40"
-            disabled={cantidad <= 1}
-            aria-label="Restar"
-          >
-            <Minus className="size-4" />
-          </button>
-          <span className="w-6 text-center font-semibold">{cantidad}</span>
-          <button
-            type="button"
-            onClick={() => setCantidad((c) => Math.min(10, c + 1))}
-            className="rounded-full border border-neutral-300 p-1.5 disabled:opacity-40"
-            disabled={cantidad >= 10}
-            aria-label="Sumar"
-          >
-            <Plus className="size-4" />
-          </button>
+      <TicketStub className="mb-6">
+        <div className="flex items-center justify-between">
+          <span className="text-xs uppercase tracking-wide text-haze">
+            Cantidad
+          </span>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setCantidad((c) => Math.max(1, c - 1))}
+              className="rounded-full border border-white/15 p-1.5 disabled:opacity-40"
+              disabled={cantidad <= 1}
+              aria-label="Restar"
+            >
+              <Minus className="size-4" />
+            </button>
+            <span className="font-mono w-6 text-center text-lg">{cantidad}</span>
+            <button
+              type="button"
+              onClick={() => setCantidad((c) => Math.min(10, c + 1))}
+              className="rounded-full border border-white/15 p-1.5 disabled:opacity-40"
+              disabled={cantidad >= 10}
+              aria-label="Sumar"
+            >
+              <Plus className="size-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      </TicketStub>
 
-      {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
+      {error && <p className="text-sm text-magenta mb-4">{error}</p>}
 
       <button
         onClick={handlePagar}
         disabled={loading}
-        className="w-full rounded-md bg-violet-600 text-white py-2.5 font-medium disabled:opacity-60"
+        className="flex items-center justify-center gap-2 w-full rounded-full bg-magenta text-ink py-2.5 font-semibold disabled:opacity-60"
       >
+        {loading && <Loader2 className="size-4 animate-spin" />}
         {loading ? "Redirigiendo a MercadoPago..." : "Pagar con MercadoPago"}
       </button>
     </div>
