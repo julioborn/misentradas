@@ -20,7 +20,7 @@ export default function LoginPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -39,7 +39,13 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("rol")
+      .eq("id", data.user.id)
+      .single();
+
+    router.push(profile?.rol === "organizer" ? "/organizer/dashboard" : "/");
     router.refresh();
   }
 

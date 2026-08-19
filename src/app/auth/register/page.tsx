@@ -45,7 +45,7 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push("/");
+    router.push(rol === "organizer" ? "/organizer/dashboard" : "/");
     router.refresh();
   }
 
