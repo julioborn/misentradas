@@ -54,6 +54,13 @@ export async function POST(request: Request) {
   const marketplaceFee =
     Math.round(event.precio * cantidad * (feePercentage / 100) * 100) / 100;
 
+  // MercadoPago rejects marketplace_fee splits (error 145 "Invalid users
+  // involved") whenever a test buyer/seller is mixed with the platform's
+  // real account, which always receives the fee. With TEST- credentials
+  // there's no way around this in sandbox, so skip the fee split and just
+  // exercise the rest of the flow (checkout, webhook, ticket creation).
+  const isTestMode = (process.env.MP_ACCESS_TOKEN ?? "").startsWith("TEST-");
+
   const preference = new Preference(getSellerMpConfig(organizer.mp_access_token));
 
   try {
@@ -68,7 +75,7 @@ export async function POST(request: Request) {
             currency_id: "ARS",
           },
         ],
-        marketplace_fee: marketplaceFee,
+        ...(isTestMode ? {} : { marketplace_fee: marketplaceFee }),
         metadata: {
           event_id: event.id,
           buyer_id: user.id,
