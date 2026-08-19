@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CheckCircle2, Link2 } from "lucide-react";
+import { CheckCircle2, Link2, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
+import { disconnectMp } from "@/app/organizer/actions";
 
 export default async function ConnectMpPage({
   searchParams,
@@ -53,17 +54,28 @@ export default async function ConnectMpPage({
       )}
 
       {isConnected ? (
-        <TicketStub>
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="size-5 text-lime shrink-0" />
-            <div>
-              <p className="font-medium">Cuenta conectada</p>
-              <p className="font-mono text-sm text-haze">
-                ID: {profile.mp_user_id}
-              </p>
+        <>
+          <TicketStub>
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="size-5 text-lime shrink-0" />
+              <div>
+                <p className="font-medium">Cuenta conectada</p>
+                <p className="font-mono text-sm text-haze">
+                  ID: {profile.mp_user_id}
+                </p>
+              </div>
             </div>
-          </div>
-        </TicketStub>
+          </TicketStub>
+          <form action={disconnectMp} className="mt-3">
+            <button
+              type="submit"
+              className="flex items-center justify-center gap-2 w-full rounded-full border border-white/15 text-haze py-2 text-sm hover:text-violet hover:border-violet/40"
+            >
+              <LogOut className="size-4" />
+              Desconectar cuenta
+            </button>
+          </form>
+        </>
       ) : (
         <Link
           href="/api/organizer/connect-mp/start"

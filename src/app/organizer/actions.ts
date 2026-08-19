@@ -111,6 +111,26 @@ export async function createEvent(formData: FormData) {
   redirect("/organizer/dashboard");
 }
 
+export async function disconnectMp() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  await supabase
+    .from("profiles")
+    .update({ mp_access_token: null, mp_user_id: null })
+    .eq("id", user.id);
+
+  revalidatePath("/organizer/connect-mp");
+  revalidatePath("/organizer/dashboard");
+  redirect("/organizer/connect-mp");
+}
+
 export async function updateEvent(eventId: string, formData: FormData) {
   const supabase = await createClient();
   const {
