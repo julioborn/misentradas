@@ -29,9 +29,25 @@ export default async function TicketsPage() {
 
   const { data: tickets } = await supabase
     .from("tickets")
-    .select("id, estado, created_at, events(nombre, fecha, lugar)")
+    .select("id, estado, created_at, events(nombre, fecha, lugar, organizer_id)")
     .eq("buyer_id", user.id)
     .order("created_at", { ascending: false });
+
+  const organizerIds = [
+    ...new Set(
+      (tickets ?? [])
+        .map((t) => t.events?.organizer_id)
+        .filter((id): id is string => Boolean(id))
+    ),
+  ];
+  const { data: organizers } = organizerIds.length
+    ? await supabase
+        .from("organizer_public")
+        .select("id, nombre, avatar_url")
+        .in("id", organizerIds)
+    : { data: [] };
+
+  const organizerById = new Map((organizers ?? []).map((o) => [o.id, o]));
 
   return (
     <div className="py-6">
@@ -57,30 +73,56 @@ export default async function TicketsPage() {
         </TicketStub>
       ) : (
         <div className="flex flex-col gap-3">
-          {tickets.map((ticket) => (
-            <Link key={ticket.id} href={`/tickets/${ticket.id}`} className="block">
-              <TicketStub className="hover:bg-surface/80 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-display uppercase tracking-wide leading-tight">
-                      {ticket.events?.nombre}
-                    </p>
-                    <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
-                      <CalendarDays className="size-4 shrink-0" />
-                      {ticket.events?.fecha && formatDate(ticket.events.fecha)}
+          {tickets.map((ticket) => {
+            const organizer = ticket.events?.organizer_id
+              ? organizerById.get(ticket.events.organizer_id)
+              : undefined;
+            return (
+              <Link key={ticket.id} href={`/tickets/${ticket.id}`} className="block">
+                <TicketStub className="hover:bg-surface/80 transition-colors">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-display uppercase tracking-wide leading-tight">
+                        {ticket.events?.nombre}
+                      </p>
+                      {organizer && (
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <div className="size-4 rounded-full overflow-hidden bg-surface border border-white/10 shrink-0 flex items-center justify-center">
+                            {organizer.avatar_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={organizer.avatar_url}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="font-display text-[8px] text-haze">
+                                {(organizer.nombre ?? "?").charAt(0).toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-haze truncate">
+                            {organizer.nombre}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
+                        <CalendarDays className="size-4 shrink-0" />
+                        {ticket.events?.fecha && formatDate(ticket.events.fecha)}
+                      </div>
                     </div>
+                    <span
+                      className={`text-xs font-medium rounded-full px-2.5 py-1 shrink-0 ${
+                        ESTADO_CLASS[ticket.estado] ?? "bg-white/5 text-haze"
+                      }`}
+                    >
+                      {ESTADO_LABEL[ticket.estado] ?? ticket.estado}
+                    </span>
                   </div>
-                  <span
-                    className={`text-xs font-medium rounded-full px-2.5 py-1 shrink-0 ${
-                      ESTADO_CLASS[ticket.estado] ?? "bg-white/5 text-haze"
-                    }`}
-                  >
-                    {ESTADO_LABEL[ticket.estado] ?? ticket.estado}
-                  </span>
-                </div>
-              </TicketStub>
-            </Link>
-          ))}
+                </TicketStub>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
