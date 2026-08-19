@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Capacitor native projects: generated locally per machine (`npm run
+# cap:add:ios` / `cap:add:android`), never shared through git so the
+# Mac (iOS) and Windows (Android) setups don't clobber each other.
+/ios
+/android

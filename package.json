@@ -6,15 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cap:add:ios": "cap add ios",
+    "cap:add:android": "cap add android",
+    "cap:sync": "cap sync",
+    "cap:assets": "capacitor-assets generate",
+    "cap:open:ios": "cap open ios",
+    "cap:open:android": "cap open android"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.0",
-    "@capacitor/camera": "^8.2.2",
+    "@capacitor/android": "^7.6.8",
+    "@capacitor/camera": "^7.0.5",
     "@capacitor/cli": "^7.6.8",
-    "@capacitor/core": "^8.5.0",
-    "@capacitor/ios": "^8.5.0",
-    "@capacitor/push-notifications": "^8.1.2",
+    "@capacitor/core": "^7.6.8",
+    "@capacitor/ios": "^7.6.8",
+    "@capacitor/push-notifications": "^7.0.7",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.109.0",
     "html5-qrcode": "^2.3.8",
@@ -27,6 +33,7 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",
