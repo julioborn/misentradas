@@ -8,9 +8,9 @@ import { disconnectMp } from "@/app/organizer/actions";
 export default async function ConnectMpPage({
   searchParams,
 }: {
-  searchParams: Promise<{ connected?: string; error?: string }>;
+  searchParams: Promise<{ connected?: string; disconnected?: string; error?: string }>;
 }) {
-  const { connected, error } = await searchParams;
+  const { connected, disconnected, error } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -45,6 +45,11 @@ export default async function ConnectMpPage({
       {connected && (
         <p className="text-sm text-lime bg-lime/10 border border-lime/20 rounded-lg px-3 py-2 mb-4">
           ¡Listo! Tu cuenta de MercadoPago quedó conectada.
+        </p>
+      )}
+      {disconnected && (
+        <p className="text-sm text-lime bg-lime/10 border border-lime/20 rounded-lg px-3 py-2 mb-4">
+          Cuenta desconectada.
         </p>
       )}
       {error && (

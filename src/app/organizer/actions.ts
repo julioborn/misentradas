@@ -110,7 +110,7 @@ export async function createEvent(formData: FormData) {
   }
 
   revalidatePath("/organizer/dashboard");
-  redirect("/organizer/dashboard");
+  redirect("/organizer/dashboard?success=evento_creado");
 }
 
 export async function updateOrganizerAvatar(formData: FormData) {
@@ -166,7 +166,7 @@ export async function disconnectMp() {
 
   revalidatePath("/organizer/connect-mp");
   revalidatePath("/organizer/dashboard");
-  redirect("/organizer/connect-mp");
+  redirect("/organizer/connect-mp?disconnected=1");
 }
 
 export async function updateEvent(eventId: string, formData: FormData) {
@@ -224,5 +224,5 @@ export async function updateEvent(eventId: string, formData: FormData) {
   }
 
   revalidatePath("/organizer/dashboard");
-  redirect("/organizer/dashboard");
+  redirect("/organizer/dashboard?success=evento_actualizado");
 }

@@ -5,7 +5,17 @@ import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
 import { formatDate } from "@/lib/date";
 
-export default async function OrganizerDashboardPage() {
+const SUCCESS_LABEL: Record<string, string> = {
+  evento_creado: "Evento creado.",
+  evento_actualizado: "Cambios guardados.",
+};
+
+export default async function OrganizerDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ success?: string }>;
+}) {
+  const { success } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -60,6 +70,12 @@ export default async function OrganizerDashboardPage() {
       <p className="text-haze text-sm mb-6">
         Gestioná tus eventos y las ventas en tiempo real.
       </p>
+
+      {success && SUCCESS_LABEL[success] && (
+        <p className="text-sm text-lime bg-lime/10 border border-lime/20 rounded-lg px-3 py-2 mb-4">
+          {SUCCESS_LABEL[success]}
+        </p>
+      )}
 
       {!mpConnected && (
         <Link
