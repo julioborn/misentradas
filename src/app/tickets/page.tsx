@@ -60,13 +60,13 @@ export default async function TicketsPage() {
           {tickets.map((ticket) => (
             <Link key={ticket.id} href={`/tickets/${ticket.id}`} className="block">
               <TicketStub className="hover:bg-surface/80 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-display uppercase tracking-wide">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display uppercase tracking-wide leading-tight">
                       {ticket.events?.nombre}
                     </p>
                     <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
-                      <CalendarDays className="size-4" />
+                      <CalendarDays className="size-4 shrink-0" />
                       {ticket.events?.fecha && formatDate(ticket.events.fecha)}
                     </div>
                   </div>

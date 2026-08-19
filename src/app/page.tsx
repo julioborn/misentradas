@@ -63,7 +63,7 @@ export default async function HomePage() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h2 className="font-display text-lg uppercase tracking-wide truncate">
+                      <h2 className="font-display text-base uppercase tracking-wide leading-tight">
                         {event.nombre}
                       </h2>
                       {organizer && (

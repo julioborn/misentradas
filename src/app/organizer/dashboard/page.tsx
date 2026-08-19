@@ -99,13 +99,13 @@ export default async function OrganizerDashboardPage() {
             const vendidas = event.stock_total - event.stock_disponible;
             return (
               <TicketStub key={event.id}>
-                <div className="flex items-center justify-between">
-                  <div className="min-w-0">
-                    <p className="font-display uppercase tracking-wide truncate">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display text-base uppercase tracking-wide leading-tight">
                       {event.nombre}
                     </p>
                     <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
-                      <CalendarDays className="size-4" />
+                      <CalendarDays className="size-4 shrink-0" />
                       {formatDate(event.fecha)}
                     </div>
                   </div>
