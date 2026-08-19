@@ -10,9 +10,10 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 async function uploadEventImage(
   supabase: SupabaseServerClient,
   userId: string,
-  formData: FormData
+  formData: FormData,
+  fieldName = "imagen"
 ): Promise<string | null> {
-  const file = formData.get("imagen");
+  const file = formData.get(fieldName);
 
   if (!(file instanceof File) || file.size === 0) {
     return null;
@@ -109,6 +110,42 @@ export async function createEvent(formData: FormData) {
 
   revalidatePath("/organizer/dashboard");
   redirect("/organizer/dashboard");
+}
+
+export async function updateOrganizerAvatar(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("rol")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.rol !== "organizer") {
+    redirect("/");
+  }
+
+  const avatarUrl = await uploadEventImage(supabase, user.id, formData, "logo");
+
+  if (!avatarUrl) {
+    redirect("/organizer/profile?error=no_se_pudo_subir");
+  }
+
+  await supabase
+    .from("profiles")
+    .update({ avatar_url: avatarUrl })
+    .eq("id", user.id);
+
+  revalidatePath("/organizer/profile");
+  revalidatePath("/organizer/dashboard");
+  redirect("/organizer/profile?success=1");
 }
 
 export async function disconnectMp() {

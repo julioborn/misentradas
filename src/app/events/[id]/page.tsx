@@ -16,12 +16,18 @@ export default async function EventDetailPage({
   const { data: event } = await supabase
     .from("events")
     .select(
-      "id, nombre, descripcion, fecha, lugar, precio, imagen_url, stock_disponible, activo"
+      "id, nombre, descripcion, fecha, lugar, precio, imagen_url, stock_disponible, activo, organizer_id"
     )
     .eq("id", id)
     .single();
 
   if (!event) notFound();
+
+  const { data: organizer } = await supabase
+    .from("organizer_public")
+    .select("nombre, avatar_url")
+    .eq("id", event.organizer_id)
+    .single();
 
   const soldOut = event.stock_disponible <= 0;
 
@@ -37,6 +43,26 @@ export default async function EventDetailPage({
           />
         )}
       </div>
+
+      {organizer && (
+        <div className="flex items-center gap-2 mb-2">
+          <div className="size-8 rounded-full overflow-hidden bg-surface border border-white/10 shrink-0 flex items-center justify-center">
+            {organizer.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={organizer.avatar_url}
+                alt={organizer.nombre ?? ""}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="font-display text-xs text-haze">
+                {(organizer.nombre ?? "?").charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <span className="text-sm text-haze">{organizer.nombre}</span>
+        </div>
+      )}
 
       <h1 className="font-display text-2xl uppercase tracking-wide">
         {event.nombre}

@@ -15,7 +15,7 @@ export default async function OrganizerDashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("rol, mp_user_id")
+    .select("rol, mp_user_id, nombre, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -34,9 +34,29 @@ export default async function OrganizerDashboardPage() {
       <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Panel organizador
       </p>
-      <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
-        Mis eventos
-      </h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="font-display text-3xl uppercase tracking-wide">
+          Mis eventos
+        </h1>
+        <Link
+          href="/organizer/profile"
+          aria-label="Editar logo"
+          className="size-11 rounded-full overflow-hidden bg-surface border border-white/10 shrink-0 flex items-center justify-center"
+        >
+          {profile.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.avatar_url}
+              alt={profile.nombre ?? "Logo"}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="font-display text-lg text-haze">
+              {(profile.nombre ?? "?").charAt(0).toUpperCase()}
+            </span>
+          )}
+        </Link>
+      </div>
       <p className="text-haze text-sm mb-6">
         Gestioná tus eventos y las ventas en tiempo real.
       </p>

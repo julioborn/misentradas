@@ -33,16 +33,58 @@ export default async function TicketDetailPage({
 
   const { data: ticket } = await supabase
     .from("tickets")
-    .select("id, qr_code, estado, events(nombre, fecha, lugar)")
+    .select(
+      "id, qr_code, estado, events(nombre, fecha, lugar, imagen_url, organizer_id)"
+    )
     .eq("id", id)
     .single();
 
   if (!ticket) notFound();
 
+  const organizerId = ticket.events?.organizer_id;
+  const { data: organizer } = organizerId
+    ? await supabase
+        .from("organizer_public")
+        .select("nombre, avatar_url")
+        .eq("id", organizerId)
+        .single()
+    : { data: null };
+
   const qrDataUrl = await generateQrDataUrl(ticket.qr_code);
 
   return (
-    <div className="py-8 flex flex-col items-center text-center">
+    <div className="py-6 flex flex-col items-center text-center">
+      {ticket.events?.imagen_url && (
+        <div className="-mx-4 w-[calc(100%+2rem)] aspect-[4/5] bg-surface mb-4 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={ticket.events.imagen_url}
+            alt={ticket.events.nombre}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
+      {organizer && (
+        <div className="flex items-center gap-2 mb-3">
+          <div className="size-8 rounded-full overflow-hidden bg-surface border border-white/10 shrink-0 flex items-center justify-center">
+            {organizer.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={organizer.avatar_url}
+                alt={organizer.nombre ?? ""}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="font-display text-xs text-haze">
+                {(organizer.nombre ?? "?").charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <span className="text-sm text-haze">{organizer.nombre}</span>
+        </div>
+      )}
+
       <h1 className="font-display text-2xl uppercase tracking-wide">
         {ticket.events?.nombre}
       </h1>
