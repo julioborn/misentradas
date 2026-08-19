@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDays, Link2, Plus, Ticket } from "lucide-react";
+import { CalendarDays, Link2, Pencil, Plus, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
 
@@ -90,11 +90,20 @@ export default async function OrganizerDashboardPage() {
                       })}
                     </div>
                   </div>
-                  {!event.activo && (
-                    <span className="text-xs font-medium rounded-full px-2.5 py-1 bg-white/5 text-haze shrink-0">
-                      Inactivo
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!event.activo && (
+                      <span className="text-xs font-medium rounded-full px-2.5 py-1 bg-white/5 text-haze">
+                        Inactivo
+                      </span>
+                    )}
+                    <Link
+                      href={`/organizer/events/${event.id}/edit`}
+                      aria-label="Editar evento"
+                      className="text-haze hover:text-violet"
+                    >
+                      <Pencil className="size-4" />
+                    </Link>
+                  </div>
                 </div>
 
                 <div className="mt-3 pt-3 border-t border-dashed border-white/10 flex items-center justify-between">

@@ -1,8 +1,67 @@
 "use server";
 
+import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
+
+async function uploadEventImage(
+  supabase: SupabaseServerClient,
+  userId: string,
+  formData: FormData
+): Promise<string | null> {
+  const file = formData.get("imagen");
+
+  if (!(file instanceof File) || file.size === 0) {
+    return null;
+  }
+
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `${userId}/${randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("event-images")
+    .upload(path, file, { contentType: file.type });
+
+  if (error) {
+    return null;
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("event-images").getPublicUrl(path);
+
+  return publicUrl;
+}
+
+function parseEventFields(formData: FormData) {
+  const nombre = String(formData.get("nombre") ?? "").trim();
+  const descripcion = String(formData.get("descripcion") ?? "").trim();
+  const fecha = String(formData.get("fecha") ?? "");
+  const lugar = String(formData.get("lugar") ?? "").trim();
+  const precio = Number(formData.get("precio"));
+  const stockTotal = Number(formData.get("stock_total"));
+
+  const valid =
+    Boolean(nombre) &&
+    Boolean(fecha) &&
+    Number.isFinite(precio) &&
+    precio >= 0 &&
+    Number.isInteger(stockTotal) &&
+    stockTotal >= 1;
+
+  return {
+    valid,
+    nombre,
+    descripcion: descripcion || null,
+    fecha: fecha ? new Date(fecha).toISOString() : null,
+    lugar: lugar || null,
+    precio,
+    stockTotal,
+  };
+}
 
 export async function createEvent(formData: FormData) {
   const supabase = await createClient();
@@ -24,39 +83,86 @@ export async function createEvent(formData: FormData) {
     redirect("/");
   }
 
-  const nombre = String(formData.get("nombre") ?? "").trim();
-  const descripcion = String(formData.get("descripcion") ?? "").trim();
-  const fecha = String(formData.get("fecha") ?? "");
-  const lugar = String(formData.get("lugar") ?? "").trim();
-  const precio = Number(formData.get("precio"));
-  const stockTotal = Number(formData.get("stock_total"));
-  const imagenUrl = String(formData.get("imagen_url") ?? "").trim();
+  const fields = parseEventFields(formData);
 
-  if (
-    !nombre ||
-    !fecha ||
-    !Number.isFinite(precio) ||
-    precio < 0 ||
-    !Number.isInteger(stockTotal) ||
-    stockTotal < 1
-  ) {
+  if (!fields.valid) {
     redirect("/organizer/events/new?error=datos_invalidos");
   }
 
+  const imagenUrl = await uploadEventImage(supabase, user.id, formData);
+
   const { error } = await supabase.from("events").insert({
     organizer_id: user.id,
-    nombre,
-    descripcion: descripcion || null,
-    fecha: new Date(fecha).toISOString(),
-    lugar: lugar || null,
-    precio,
-    stock_total: stockTotal,
-    stock_disponible: stockTotal,
-    imagen_url: imagenUrl || null,
+    nombre: fields.nombre,
+    descripcion: fields.descripcion,
+    fecha: fields.fecha!,
+    lugar: fields.lugar,
+    precio: fields.precio,
+    stock_total: fields.stockTotal,
+    stock_disponible: fields.stockTotal,
+    imagen_url: imagenUrl,
   });
 
   if (error) {
     redirect("/organizer/events/new?error=no_se_pudo_crear");
+  }
+
+  revalidatePath("/organizer/dashboard");
+  redirect("/organizer/dashboard");
+}
+
+export async function updateEvent(eventId: string, formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  const { data: event } = await supabase
+    .from("events")
+    .select("organizer_id, stock_total, stock_disponible, imagen_url")
+    .eq("id", eventId)
+    .single();
+
+  if (!event || event.organizer_id !== user.id) {
+    redirect("/organizer/dashboard");
+  }
+
+  const fields = parseEventFields(formData);
+
+  if (!fields.valid) {
+    redirect(`/organizer/events/${eventId}/edit?error=datos_invalidos`);
+  }
+
+  const sold = event.stock_total - event.stock_disponible;
+
+  if (fields.stockTotal < sold) {
+    redirect(`/organizer/events/${eventId}/edit?error=stock_menor_a_vendidas`);
+  }
+
+  const activo = formData.get("activo") === "on";
+  const nuevaImagenUrl = await uploadEventImage(supabase, user.id, formData);
+
+  const { error } = await supabase
+    .from("events")
+    .update({
+      nombre: fields.nombre,
+      descripcion: fields.descripcion,
+      fecha: fields.fecha!,
+      lugar: fields.lugar,
+      precio: fields.precio,
+      stock_total: fields.stockTotal,
+      stock_disponible: fields.stockTotal - sold,
+      imagen_url: nuevaImagenUrl ?? event.imagen_url,
+      activo,
+    })
+    .eq("id", eventId);
+
+  if (error) {
+    redirect(`/organizer/events/${eventId}/edit?error=no_se_pudo_guardar`);
   }
 
   revalidatePath("/organizer/dashboard");
