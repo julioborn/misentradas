@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createEvent } from "@/app/organizer/actions";
 import { TicketStub } from "@/components/ticket-stub";
+import { LocationSelect } from "@/components/location-select";
 
 const ERROR_LABEL: Record<string, string> = {
   datos_invalidos: "Revisá los datos: falta algo o el precio/stock no es válido.",
@@ -104,6 +105,8 @@ export default async function NewEventPage({
               placeholder="Costanera 1234, CABA"
             />
           </div>
+
+          <LocationSelect />
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">

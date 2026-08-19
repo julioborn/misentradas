@@ -19,7 +19,7 @@ export default async function EventDetailPage({
   const { data: event } = await supabase
     .from("events")
     .select(
-      "id, nombre, descripcion, fecha, lugar, precio, imagen_url, stock_disponible, activo, organizer_id"
+      "id, nombre, descripcion, fecha, lugar, provincia, localidad, precio, imagen_url, stock_disponible, activo, organizer_id"
     )
     .eq("id", id)
     .single();
@@ -77,10 +77,12 @@ export default async function EventDetailPage({
         <CalendarDays className="size-4" />
         {formatDateTime(event.fecha)}
       </div>
-      {event.lugar && (
+      {(event.lugar || event.localidad || event.provincia) && (
         <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
-          <MapPin className="size-4" />
-          {event.lugar}
+          <MapPin className="size-4 shrink-0" />
+          {[event.lugar, event.localidad, event.provincia]
+            .filter(Boolean)
+            .join(", ")}
         </div>
       )}
 

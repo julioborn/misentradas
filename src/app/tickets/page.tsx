@@ -30,7 +30,7 @@ export default async function TicketsPage() {
   const { data: tickets } = await supabase
     .from("tickets")
     .select(
-      "id, estado, created_at, events(nombre, fecha, lugar, imagen_url, organizer_id)"
+      "id, estado, created_at, events(nombre, fecha, lugar, provincia, localidad, imagen_url, organizer_id)"
     )
     .eq("buyer_id", user.id)
     .order("created_at", { ascending: false });
@@ -122,10 +122,20 @@ export default async function TicketsPage() {
                         <CalendarDays className="size-3.5 shrink-0" />
                         {ticket.events?.fecha && formatDate(ticket.events.fecha)}
                       </div>
-                      {ticket.events?.lugar && (
+                      {(ticket.events?.lugar ||
+                        ticket.events?.localidad ||
+                        ticket.events?.provincia) && (
                         <div className="flex items-center gap-1.5 text-xs text-haze mt-0.5">
                           <MapPin className="size-3.5 shrink-0" />
-                          <span className="truncate">{ticket.events.lugar}</span>
+                          <span className="truncate">
+                            {[
+                              ticket.events?.lugar,
+                              ticket.events?.localidad,
+                              ticket.events?.provincia,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </span>
                         </div>
                       )}
                     </div>

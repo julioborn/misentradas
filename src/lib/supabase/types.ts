@@ -65,10 +65,12 @@ export type Database = {
           fecha: string
           id: string
           imagen_url: string | null
+          localidad: string | null
           lugar: string | null
           nombre: string
           organizer_id: string
           precio: number
+          provincia: string | null
           stock_disponible: number
           stock_total: number
         }
@@ -79,10 +81,12 @@ export type Database = {
           fecha: string
           id?: string
           imagen_url?: string | null
+          localidad?: string | null
           lugar?: string | null
           nombre: string
           organizer_id: string
           precio: number
+          provincia?: string | null
           stock_disponible: number
           stock_total: number
         }
@@ -93,10 +97,12 @@ export type Database = {
           fecha?: string
           id?: string
           imagen_url?: string | null
+          localidad?: string | null
           lugar?: string | null
           nombre?: string
           organizer_id?: string
           precio?: number
+          provincia?: string | null
           stock_disponible?: number
           stock_total?: number
         }

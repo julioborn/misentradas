@@ -35,7 +35,7 @@ export default async function TicketDetailPage({
   const { data: ticket } = await supabase
     .from("tickets")
     .select(
-      "id, qr_code, estado, events(nombre, fecha, lugar, imagen_url, organizer_id)"
+      "id, qr_code, estado, events(nombre, fecha, lugar, provincia, localidad, imagen_url, organizer_id)"
     )
     .eq("id", id)
     .single();
@@ -96,10 +96,18 @@ export default async function TicketDetailPage({
             <CalendarDays className="size-4 shrink-0" />
             {ticket.events?.fecha && formatDateTime(ticket.events.fecha)}
           </div>
-          {ticket.events?.lugar && (
+          {(ticket.events?.lugar ||
+            ticket.events?.localidad ||
+            ticket.events?.provincia) && (
             <div className="flex items-center gap-1.5 text-sm text-haze mt-0.5">
               <MapPin className="size-4 shrink-0" />
-              {ticket.events.lugar}
+              {[
+                ticket.events?.lugar,
+                ticket.events?.localidad,
+                ticket.events?.provincia,
+              ]
+                .filter(Boolean)
+                .join(", ")}
             </div>
           )}
 

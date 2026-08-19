@@ -44,6 +44,8 @@ function parseEventFields(formData: FormData) {
   const descripcion = String(formData.get("descripcion") ?? "").trim();
   const fecha = String(formData.get("fecha") ?? "");
   const lugar = String(formData.get("lugar") ?? "").trim();
+  const provincia = String(formData.get("provincia") ?? "").trim();
+  const localidad = String(formData.get("localidad") ?? "").trim();
   const precio = Number(formData.get("precio"));
   const stockTotal = Number(formData.get("stock_total"));
 
@@ -61,6 +63,8 @@ function parseEventFields(formData: FormData) {
     descripcion: descripcion || null,
     fecha: fecha ? datetimeLocalValueToIso(fecha) : null,
     lugar: lugar || null,
+    provincia: provincia || null,
+    localidad: localidad || null,
     precio,
     stockTotal,
   };
@@ -100,6 +104,8 @@ export async function createEvent(formData: FormData) {
     descripcion: fields.descripcion,
     fecha: fields.fecha!,
     lugar: fields.lugar,
+    provincia: fields.provincia,
+    localidad: fields.localidad,
     precio: fields.precio,
     stock_total: fields.stockTotal,
     stock_disponible: fields.stockTotal,
@@ -212,6 +218,8 @@ export async function updateEvent(eventId: string, formData: FormData) {
       descripcion: fields.descripcion,
       fecha: fields.fecha!,
       lugar: fields.lugar,
+      provincia: fields.provincia,
+      localidad: fields.localidad,
       precio: fields.precio,
       stock_total: fields.stockTotal,
       stock_disponible: fields.stockTotal - sold,

@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateEvent } from "@/app/organizer/actions";
 import { TicketStub } from "@/components/ticket-stub";
+import { LocationSelect } from "@/components/location-select";
 import { toDatetimeLocalValue } from "@/lib/date";
 
 const ERROR_LABEL: Record<string, string> = {
@@ -30,7 +31,7 @@ export default async function EditEventPage({
   const { data: event } = await supabase
     .from("events")
     .select(
-      "id, organizer_id, nombre, descripcion, fecha, lugar, precio, stock_total, imagen_url, activo"
+      "id, organizer_id, nombre, descripcion, fecha, lugar, provincia, localidad, precio, stock_total, imagen_url, activo"
     )
     .eq("id", id)
     .single();
@@ -114,6 +115,11 @@ export default async function EditEventPage({
               className="rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper placeholder:text-haze/60 focus:outline-none focus:ring-2 focus:ring-violet"
             />
           </div>
+
+          <LocationSelect
+            defaultProvincia={event.provincia}
+            defaultLocalidad={event.localidad}
+          />
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">

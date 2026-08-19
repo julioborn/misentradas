@@ -2,16 +2,31 @@ import Link from "next/link";
 import { CalendarDays, MapPin, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
+import { LocationFilter } from "@/components/location-filter";
 import { formatDateTime } from "@/lib/date";
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ provincia?: string; localidad?: string }>;
+}) {
+  const { provincia, localidad } = await searchParams;
   const supabase = await createClient();
 
-  const { data: events } = await supabase
+  let query = supabase
     .from("events")
-    .select("id, nombre, fecha, lugar, precio, imagen_url, organizer_id")
-    .eq("activo", true)
-    .order("fecha", { ascending: true });
+    .select(
+      "id, nombre, fecha, lugar, provincia, localidad, precio, imagen_url, organizer_id"
+    )
+    .eq("activo", true);
+
+  if (localidad) {
+    query = query.eq("localidad", localidad);
+  } else if (provincia) {
+    query = query.eq("provincia", provincia);
+  }
+
+  const { data: events } = await query.order("fecha", { ascending: true });
 
   const organizerIds = [...new Set((events ?? []).map((e) => e.organizer_id))];
   const { data: organizers } = organizerIds.length
@@ -33,15 +48,21 @@ export default async function HomePage() {
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
         Eventos disponibles
       </h1>
-      <p className="text-haze text-sm mb-6">
+      <p className="text-haze text-sm mb-4">
         Comprá tu entrada y recibí el QR al instante.
       </p>
+
+      <LocationFilter />
 
       {!events || events.length === 0 ? (
         <TicketStub>
           <div className="flex flex-col items-center gap-2 text-center text-haze py-10">
             <Ticket className="size-8" />
-            <p className="text-sm">Todavía no hay eventos publicados.</p>
+            <p className="text-sm">
+              {localidad || provincia
+                ? `No hay eventos en ${localidad || provincia} por ahora.`
+                : "Todavía no hay eventos publicados."}
+            </p>
           </div>
         </TicketStub>
       ) : (
@@ -91,10 +112,14 @@ export default async function HomePage() {
                         <CalendarDays className="size-3.5" />
                         {formatDateTime(event.fecha)}
                       </div>
-                      {event.lugar && (
+                      {(event.lugar || event.localidad || event.provincia) && (
                         <div className="flex items-center gap-1.5 text-xs text-haze mt-0.5">
-                          <MapPin className="size-3.5" />
-                          {event.lugar}
+                          <MapPin className="size-3.5 shrink-0" />
+                          <span className="truncate">
+                            {[event.lugar, event.localidad, event.provincia]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </span>
                         </div>
                       )}
                     </div>
