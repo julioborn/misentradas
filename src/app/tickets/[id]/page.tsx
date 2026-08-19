@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { CalendarDays, MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { generateQrDataUrl } from "@/lib/qr";
+import { formatDateTime } from "@/lib/date";
 
 const ESTADO_LABEL: Record<string, string> = {
   pending_cash: "Pendiente de pago",
@@ -48,11 +49,7 @@ export default async function TicketDetailPage({
 
       <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
         <CalendarDays className="size-4" />
-        {ticket.events?.fecha &&
-          new Date(ticket.events.fecha).toLocaleString("es-AR", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          })}
+        {ticket.events?.fecha && formatDateTime(ticket.events.fecha)}
       </div>
       {ticket.events?.lugar && (
         <div className="flex items-center gap-1.5 text-sm text-haze mt-0.5">

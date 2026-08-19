@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CalendarDays, MapPin, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
+import { formatDateTime } from "@/lib/date";
 
 export default async function EventDetailPage({
   params,
@@ -43,10 +44,7 @@ export default async function EventDetailPage({
 
       <div className="flex items-center gap-1.5 text-sm text-haze mt-2">
         <CalendarDays className="size-4" />
-        {new Date(event.fecha).toLocaleString("es-AR", {
-          dateStyle: "medium",
-          timeStyle: "short",
-        })}
+        {formatDateTime(event.fecha)}
       </div>
       {event.lugar && (
         <div className="flex items-center gap-1.5 text-sm text-haze mt-1">

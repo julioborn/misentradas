@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Mail, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
+import { formatDateTimeShort } from "@/lib/date";
 
 const ESTADO_LABEL: Record<string, string> = {
   pending_cash: "Pendiente de pago",
@@ -111,10 +112,7 @@ export default async function EventSalesPage({
                   {METODO_LABEL[ticket.metodo_pago] ?? ticket.metodo_pago}
                 </span>
                 <span className="font-mono">
-                  {new Date(ticket.created_at).toLocaleString("es-AR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
+                  {formatDateTimeShort(ticket.created_at)}
                 </span>
               </div>
             </TicketStub>

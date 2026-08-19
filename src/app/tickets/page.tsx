@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { CalendarDays, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
+import { formatDate } from "@/lib/date";
 
 const ESTADO_LABEL: Record<string, string> = {
   pending_cash: "Pendiente de pago",
@@ -66,10 +67,7 @@ export default async function TicketsPage() {
                     </p>
                     <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
                       <CalendarDays className="size-4" />
-                      {ticket.events?.fecha &&
-                        new Date(ticket.events.fecha).toLocaleDateString("es-AR", {
-                          dateStyle: "medium",
-                        })}
+                      {ticket.events?.fecha && formatDate(ticket.events.fecha)}
                     </div>
                   </div>
                   <span

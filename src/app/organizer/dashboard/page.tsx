@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { CalendarDays, Link2, Pencil, Plus, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
+import { formatDate } from "@/lib/date";
 
 export default async function OrganizerDashboardPage() {
   const supabase = await createClient();
@@ -85,9 +86,7 @@ export default async function OrganizerDashboardPage() {
                     </p>
                     <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
                       <CalendarDays className="size-4" />
-                      {new Date(event.fecha).toLocaleDateString("es-AR", {
-                        dateStyle: "medium",
-                      })}
+                      {formatDate(event.fecha)}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">

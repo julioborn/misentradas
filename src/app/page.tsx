@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin, Ticket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
+import { formatDateTime } from "@/lib/date";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -53,10 +54,7 @@ export default async function HomePage() {
                     </h2>
                     <div className="flex items-center gap-1.5 text-xs text-haze mt-1">
                       <CalendarDays className="size-3.5" />
-                      {new Date(event.fecha).toLocaleString("es-AR", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
+                      {formatDateTime(event.fecha)}
                     </div>
                     {event.lugar && (
                       <div className="flex items-center gap-1.5 text-xs text-haze mt-0.5">
