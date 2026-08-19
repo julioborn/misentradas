@@ -84,9 +84,15 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({
-      init_point: result.init_point ?? result.sandbox_init_point,
-    });
+    // With TEST- platform credentials, buyers must go through the sandbox
+    // checkout domain — the production one authenticates test users fine
+    // but always fails right after, since it can't actually charge them.
+    const isTestMode = (process.env.MP_ACCESS_TOKEN ?? "").startsWith("TEST-");
+    const initPoint = isTestMode
+      ? (result.sandbox_init_point ?? result.init_point)
+      : (result.init_point ?? result.sandbox_init_point);
+
+    return NextResponse.json({ init_point: initPoint });
   } catch (err) {
     console.error("MP create preference error", err);
     return NextResponse.json(
