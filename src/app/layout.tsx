@@ -45,6 +45,7 @@ export const viewport: Viewport = {
   themeColor: "#0b0a12",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -56,7 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col bg-ink text-paper">
         <PushInit />
         <Navbar />
-        <main className="flex-1 w-full max-w-md mx-auto px-4 py-6">
+        <main className="flex-1 w-full max-w-md mx-auto px-4 pt-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
           <PullToRefresh>{children}</PullToRefresh>
         </main>
       </body>

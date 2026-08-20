@@ -73,7 +73,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-ink/90 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-ink/90 backdrop-blur pt-[env(safe-area-inset-top)]">
         <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <Image
@@ -105,7 +105,7 @@ export function Navbar() {
             onClick={() => setMenuOpen(false)}
             className="absolute inset-0 bg-ink/80 backdrop-blur-sm"
           />
-          <nav className="absolute right-0 top-0 h-full w-72 max-w-[80vw] bg-surface border-l border-white/10 flex flex-col p-4">
+          <nav className="absolute right-0 top-0 h-full w-72 max-w-[80vw] bg-surface border-l border-white/10 flex flex-col px-4 pt-[calc(env(safe-area-inset-top)+1rem)] pb-[calc(env(safe-area-inset-bottom)+1rem)]">
             <div className="flex items-center justify-between mb-6">
               <span className="font-display text-lg tracking-wide lowercase">
                 menú
