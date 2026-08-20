@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, X } from "lucide-react";
 import { resolveLocationFromCoords, writeLocationCookie } from "@/lib/geo-client";
-
-const PROMPTED_KEY = "me_loc_prompted";
+import { LOCATION_PROMPTED_KEY } from "@/lib/location-preference";
 
 export function LocationPrompt({
   hasSavedLocation,
@@ -20,13 +19,13 @@ export function LocationPrompt({
   useEffect(() => {
     if (hasSavedLocation) return;
     Promise.resolve().then(() => {
-      if (window.localStorage.getItem(PROMPTED_KEY)) return;
+      if (window.localStorage.getItem(LOCATION_PROMPTED_KEY)) return;
       setVisible(true);
     });
   }, [hasSavedLocation]);
 
   function dismiss() {
-    window.localStorage.setItem(PROMPTED_KEY, "1");
+    window.localStorage.setItem(LOCATION_PROMPTED_KEY, "1");
     setVisible(false);
   }
 
@@ -53,7 +52,7 @@ export function LocationPrompt({
           }
 
           writeLocationCookie(resolved);
-          window.localStorage.setItem(PROMPTED_KEY, "1");
+          window.localStorage.setItem(LOCATION_PROMPTED_KEY, "1");
           setVisible(false);
 
           const params = new URLSearchParams();
@@ -69,7 +68,7 @@ export function LocationPrompt({
       () => {
         setNotice("No pudimos acceder a tu ubicación.");
         setLocating(false);
-        window.localStorage.setItem(PROMPTED_KEY, "1");
+        window.localStorage.setItem(LOCATION_PROMPTED_KEY, "1");
       }
     );
   }

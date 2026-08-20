@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { LocateFixed, X } from "lucide-react";
-import {
-  clearLocationCookie,
-  resolveLocationFromCoords,
-  writeLocationCookie,
-} from "@/lib/geo-client";
+import { X } from "lucide-react";
+import { clearLocationCookie, writeLocationCookie } from "@/lib/geo-client";
+import { LOCATION_PROMPTED_KEY } from "@/lib/location-preference";
 
 type GeoItem = { id: string; nombre: string };
 
@@ -23,8 +20,6 @@ export function LocationFilter() {
   const [provincia, setProvincia] = useState(currentProvincia);
   const [localidad, setLocalidad] = useState(currentLocalidad);
   const loadingLocalidades = Boolean(provincia) && provincia !== localidadesProvincia;
-  const [locating, setLocating] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/georef/provincias")
@@ -50,12 +45,8 @@ export function LocationFilter() {
       });
   }, [provincia]);
 
-  function applyFilter(
-    nextProvincia: string,
-    nextLocalidad: string,
-    persist = true
-  ) {
-    if (persist && nextProvincia) {
+  function applyFilter(nextProvincia: string, nextLocalidad: string) {
+    if (nextProvincia) {
       writeLocationCookie({ provincia: nextProvincia, localidad: nextLocalidad });
     }
     const params = new URLSearchParams();
@@ -64,83 +55,31 @@ export function LocationFilter() {
     router.push(params.toString() ? `/?${params.toString()}` : "/");
   }
 
-  function handleUseLocation() {
-    if (!navigator.geolocation) {
-      setNotice("Tu navegador no soporta geolocalización.");
-      return;
-    }
-
-    setLocating(true);
-    setNotice(null);
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const resolved = await resolveLocationFromCoords(
-            pos.coords.latitude,
-            pos.coords.longitude
-          );
-
-          if (!resolved) {
-            setNotice("No pudimos determinar tu ubicación.");
-            return;
-          }
-
-          setProvincia(resolved.provincia);
-          setLocalidad(resolved.localidad);
-          applyFilter(resolved.provincia, resolved.localidad);
-          setNotice(
-            resolved.localidad
-              ? `Te ubicamos en ${resolved.localidad}, ${resolved.provincia}.`
-              : `Te ubicamos en ${resolved.provincia}. No encontramos tu localidad exacta, elegila vos.`
-          );
-        } catch {
-          setNotice("No pudimos determinar tu ubicación.");
-        } finally {
-          setLocating(false);
-        }
-      },
-      () => {
-        setNotice("No pudimos acceder a tu ubicación.");
-        setLocating(false);
-      }
-    );
-  }
-
   function handleClear() {
     setProvincia("");
     setLocalidad("");
     setLocalidades([]);
-    setNotice(null);
     clearLocationCookie();
-    applyFilter("", "", false);
+    // Let "¿Ver eventos cerca tuyo?" offer to activate the location again
+    // next time, instead of staying dismissed forever.
+    window.localStorage.removeItem(LOCATION_PROMPTED_KEY);
+    router.push("/");
   }
 
   const hasFilter = Boolean(currentProvincia || currentLocalidad);
 
   return (
     <div className="mb-6 flex flex-col gap-2">
-      <div className="flex items-center gap-2">
+      {hasFilter && (
         <button
           type="button"
-          onClick={handleUseLocation}
-          disabled={locating}
-          className="flex items-center gap-1.5 text-xs font-medium text-violet border border-violet/30 rounded-full px-3 py-1.5 disabled:opacity-50"
+          onClick={handleClear}
+          className="flex items-center gap-1 self-start text-xs text-haze"
         >
-          <LocateFixed className="size-3.5" />
-          {locating ? "Buscando..." : "Usar mi ubicación"}
+          <X className="size-3.5" />
+          Limpiar ubicación
         </button>
-        {hasFilter && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="flex items-center gap-1 text-xs text-haze"
-          >
-            <X className="size-3.5" />
-            Limpiar
-          </button>
-        )}
-      </div>
+      )}
 
       <div className="grid grid-cols-2 gap-2">
         <select
@@ -150,10 +89,9 @@ export function LocationFilter() {
             setProvincia(value);
             setLocalidad("");
             if (!value) {
-              setLocalidades([]);
-              clearLocationCookie();
-              applyFilter("", "", false);
+              handleClear();
             } else {
+              setLocalidades([]);
               applyFilter(value, "");
             }
           }}
@@ -186,8 +124,6 @@ export function LocationFilter() {
           ))}
         </select>
       </div>
-
-      {notice && <p className="text-xs text-haze">{notice}</p>}
     </div>
   );
 }
