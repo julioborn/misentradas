@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { PushInit } from "@/components/push-init";
+import { PullToRefresh } from "@/components/pull-to-refresh";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,7 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <PushInit />
         <Navbar />
         <main className="flex-1 w-full max-w-md mx-auto px-4 py-6">
-          {children}
+          <PullToRefresh>{children}</PullToRefresh>
         </main>
       </body>
     </html>
