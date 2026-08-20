@@ -4,10 +4,12 @@ import { Image as ImageIcon, Link2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { updateProfile } from "@/app/account/actions";
 import { TicketStub } from "@/components/ticket-stub";
+import { DeleteAccountForm } from "@/components/delete-account-form";
 
 const ERROR_LABEL: Record<string, string> = {
   nombre_requerido: "El nombre no puede quedar vacío.",
   no_se_pudo_guardar: "No pudimos guardar los cambios. Intentá de nuevo.",
+  confirmacion_invalida: 'Escribí "ELIMINAR" exactamente para confirmar.',
 };
 
 const ROL_LABEL: Record<string, string> = {
@@ -117,6 +119,13 @@ export default async function AccountPage({
           </Link>
         </div>
       )}
+
+      <div className="mt-8 pt-6 border-t border-white/10">
+        <p className="text-xs uppercase tracking-wide text-haze mb-2">
+          Zona de riesgo
+        </p>
+        <DeleteAccountForm />
+      </div>
     </div>
   );
 }
