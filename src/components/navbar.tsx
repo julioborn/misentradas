@@ -83,7 +83,7 @@ export function Navbar() {
               height={30}
               className="rounded-lg"
             />
-            <span className="font-display text-xl tracking-wide lowercase">
+            <span className="font-display text-sm tracking-wide uppercase">
               Mis Entradas
             </span>
           </Link>
