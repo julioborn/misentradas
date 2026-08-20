@@ -12,6 +12,7 @@ import {
   Menu,
   Plus,
   ScanLine,
+  Shield,
   Ticket,
   User,
   UserPlus,
@@ -166,6 +167,13 @@ export function Navbar() {
                 >
                   Mi cuenta
                 </MenuLink>
+                <MenuLink
+                  href="/privacidad"
+                  icon={<Shield className="size-4" />}
+                  onNavigate={() => setMenuOpen(false)}
+                >
+                  Privacidad
+                </MenuLink>
 
                 <div className="mt-auto pt-4 border-t border-white/10">
                   <button
@@ -199,6 +207,13 @@ export function Navbar() {
                   onNavigate={() => setMenuOpen(false)}
                 >
                   Registrarme
+                </MenuLink>
+                <MenuLink
+                  href="/privacidad"
+                  icon={<Shield className="size-4" />}
+                  onNavigate={() => setMenuOpen(false)}
+                >
+                  Privacidad
                 </MenuLink>
               </div>
             )}
