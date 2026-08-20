@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "534326640563",
+    "project_id": "mis-entradas-2c780",
+    "storage_bucket": "mis-entradas-2c780.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534326640563:android:3a21fa934fd5a6d0b595c6",
+        "android_client_info": {
+          "package_name": "ar.com.misentradas.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKWFXxu-5Lz4_P36GEu8-k6nXcUuyudKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
