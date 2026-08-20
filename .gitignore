@@ -52,3 +52,8 @@ next-env.d.ts
 # downloaded service account key if one ends up in the repo.
 *service-account*.json
 *firebase-adminsdk*.json
+
+# Android release signing key: losing this = can never update the app
+# on Play Store again under the same listing. Never goes in git — back
+# it up somewhere durable and safe outside the repo.
+/android-signing
