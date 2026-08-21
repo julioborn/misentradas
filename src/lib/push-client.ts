@@ -27,13 +27,33 @@ export async function initPushNotifications() {
   initialized = true;
 
   const supabase = createClient();
+  const platform = Capacitor.getPlatform();
 
-  PushNotifications.addListener("registration", (token) => {
-    currentToken = token.value;
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) registerTokenWithServer(token.value);
+  if (platform === "android") {
+    // On Android, @capacitor/push-notifications delivers the FCM token directly.
+    PushNotifications.addListener("registration", (token) => {
+      currentToken = token.value;
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) registerTokenWithServer(token.value);
+      });
     });
-  });
+  } else if (platform === "ios") {
+    // On iOS, Firebase delivers the FCM token via AppDelegate.messaging(_:didReceiveRegistrationToken:),
+    // which injects it into the WebView as a custom DOM event. The Capacitor registration
+    // event only carries the raw APNs token, which firebase-admin can't target directly.
+    const handleToken = (token: string) => {
+      currentToken = token;
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) registerTokenWithServer(token);
+      });
+    };
+    // Token may have arrived before JS hydration completed.
+    const w = window as Window & { __iosFCMToken?: string };
+    if (w.__iosFCMToken) handleToken(w.__iosFCMToken);
+    window.addEventListener("iosFCMToken", (e) => {
+      handleToken((e as CustomEvent<string>).detail);
+    });
+  }
 
   PushNotifications.addListener("registrationError", (err) => {
     console.error("Push registration error", err);
