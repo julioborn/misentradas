@@ -13,6 +13,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
 import { formatDate } from "@/lib/date";
+import { toggleEventActivo } from "@/app/organizer/actions";
 
 const SUCCESS_LABEL: Record<string, string> = {
   evento_creado: "Evento creado.",
@@ -135,11 +136,24 @@ export default async function OrganizerDashboardPage({
                     </div>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    {!event.activo && (
-                      <span className="text-xs font-medium rounded-full px-2.5 py-1 bg-white/5 text-haze">
-                        Inactivo
-                      </span>
-                    )}
+                    <form action={toggleEventActivo.bind(null, event.id)}>
+                      <button
+                        type="submit"
+                        aria-label={
+                          event.activo ? "Ocultar evento" : "Publicar evento"
+                        }
+                        title={event.activo ? "Visible" : "Oculto"}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                          event.activo ? "bg-lime" : "bg-white/10"
+                        }`}
+                      >
+                        <span
+                          className={`inline-block size-3.5 transform rounded-full bg-ink transition-transform ${
+                            event.activo ? "translate-x-4" : "translate-x-1"
+                          }`}
+                        />
+                      </button>
+                    </form>
                     <Link
                       href={`/organizer/events/${event.id}/manual`}
                       aria-label="Generar entrada manual"

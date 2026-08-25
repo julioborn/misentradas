@@ -236,6 +236,34 @@ export async function updateEvent(eventId: string, formData: FormData) {
   redirect("/organizer/dashboard?success=evento_actualizado");
 }
 
+export async function toggleEventActivo(eventId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  const { data: event } = await supabase
+    .from("events")
+    .select("organizer_id, activo")
+    .eq("id", eventId)
+    .single();
+
+  if (!event || event.organizer_id !== user.id) {
+    redirect("/organizer/dashboard");
+  }
+
+  await supabase
+    .from("events")
+    .update({ activo: !event.activo })
+    .eq("id", eventId);
+
+  revalidatePath("/organizer/dashboard");
+}
+
 async function assertOwnsEvent(
   supabase: SupabaseServerClient,
   eventId: string,

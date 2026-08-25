@@ -34,7 +34,8 @@ export default async function HomePage({
     .select(
       "id, nombre, fecha, lugar, provincia, localidad, precio, imagen_url, organizer_id"
     )
-    .eq("activo", true);
+    .eq("activo", true)
+    .gte("fecha", new Date().toISOString());
 
   if (localidad) {
     query = query.eq("localidad", localidad);
