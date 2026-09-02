@@ -149,6 +149,7 @@ export function Navbar() {
                 <MenuLink
                   href="/tickets"
                   icon={<Ticket className="size-4" />}
+                  subtitle="Las entradas que compraste"
                   onNavigate={() => setMenuOpen(false)}
                 >
                   Mis entradas
@@ -156,9 +157,10 @@ export function Navbar() {
                 <MenuLink
                   href="/scan"
                   icon={<ScanLine className="size-4" />}
+                  subtitle="Validar entradas en la puerta"
                   onNavigate={() => setMenuOpen(false)}
                 >
-                  Escanear
+                  Escanear QR
                 </MenuLink>
                 <MenuLink
                   href="/account"
@@ -228,11 +230,13 @@ function MenuLink({
   href,
   icon,
   children,
+  subtitle,
   onNavigate,
 }: {
   href: string;
   icon: ReactNode;
   children: ReactNode;
+  subtitle?: string;
   onNavigate: () => void;
 }) {
   return (
@@ -242,7 +246,10 @@ function MenuLink({
       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-paper hover:bg-white/5 hover:text-violet"
     >
       {icon}
-      {children}
+      <span className="flex flex-col">
+        {children}
+        {subtitle && <span className="text-xs text-haze">{subtitle}</span>}
+      </span>
     </Link>
   );
 }

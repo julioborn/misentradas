@@ -8,7 +8,11 @@ import { LOCATION_PROMPTED_KEY } from "@/lib/location-preference";
 
 type GeoItem = { id: string; nombre: string };
 
-export function LocationFilter() {
+export function LocationFilter({
+  provinciasConEventos = [],
+}: {
+  provinciasConEventos?: string[];
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentProvincia = searchParams.get("provincia") ?? "";
@@ -49,9 +53,11 @@ export function LocationFilter() {
     if (nextProvincia) {
       writeLocationCookie({ provincia: nextProvincia, localidad: nextLocalidad });
     }
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
     if (nextProvincia) params.set("provincia", nextProvincia);
+    else params.delete("provincia");
     if (nextLocalidad) params.set("localidad", nextLocalidad);
+    else params.delete("localidad");
     router.push(params.toString() ? `/?${params.toString()}` : "/");
   }
 
@@ -63,7 +69,10 @@ export function LocationFilter() {
     // Let "¿Ver eventos cerca tuyo?" offer to activate the location again
     // next time, instead of staying dismissed forever.
     window.localStorage.removeItem(LOCATION_PROMPTED_KEY);
-    router.push("/");
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("provincia");
+    params.delete("localidad");
+    router.push(params.toString() ? `/?${params.toString()}` : "/");
   }
 
   const hasFilter = Boolean(currentProvincia || currentLocalidad);
@@ -79,6 +88,45 @@ export function LocationFilter() {
           <X className="size-3.5" />
           Limpiar ubicación
         </button>
+      )}
+
+      {provinciasConEventos.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
+          <button
+            type="button"
+            onClick={() => {
+              setProvincia("");
+              setLocalidad("");
+              applyFilter("", "");
+            }}
+            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium border ${
+              !currentProvincia
+                ? "bg-violet text-ink border-violet"
+                : "border-white/10 text-haze"
+            }`}
+          >
+            Todas
+          </button>
+          {provinciasConEventos.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => {
+                setProvincia(p);
+                setLocalidad("");
+                setLocalidades([]);
+                applyFilter(p, "");
+              }}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium border ${
+                currentProvincia === p && !currentLocalidad
+                  ? "bg-violet text-ink border-violet"
+                  : "border-white/10 text-haze"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
       )}
 
       <div className="grid grid-cols-2 gap-2">

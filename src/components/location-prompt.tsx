@@ -83,7 +83,8 @@ export function LocationPrompt({
           ¿Ver los eventos más cerca tuyo?
         </p>
         <p className="text-xs text-haze mt-0.5">
-          {notice ?? "Activá tu ubicación una vez y te la recordamos siempre."}
+          {notice ??
+            "Usamos tu ubicación una sola vez para mostrarte primero los eventos de tu provincia y localidad, en vez de tener que buscarlos vos. La activás una vez y te la recordamos siempre."}
         </p>
         <div className="flex items-center gap-3 mt-2">
           <button

@@ -42,9 +42,19 @@ export default async function ScanHubPage() {
       <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
         Escanear
       </h1>
-      <p className="text-haze text-sm mb-6">
+      <p className="text-haze text-sm mb-4">
         Elegí el evento para validar entradas en la puerta.
       </p>
+
+      <div className="rounded-xl border border-violet/20 bg-violet/5 px-4 py-3 mb-6 text-xs text-haze leading-relaxed">
+        <p className="text-paper font-medium mb-1">¿Cómo funciona?</p>
+        <p>
+          Elegí el evento, apuntá la cámara al código QR de cada entrada y la
+          app te confirma al instante si es válida. Cada QR se puede escanear
+          una sola vez: si alguien intenta reusarlo, la app avisa que ya fue
+          utilizado.
+        </p>
+      </div>
 
       {events.length === 0 ? (
         <TicketStub>
