@@ -81,7 +81,7 @@ export async function POST(request: Request) {
             currency_id: "ARS",
           },
         ],
-        ...(isTestMode ? {} : { marketplace_fee: marketplaceFee }),
+        ...(isTestMode || marketplaceFee <= 0 ? {} : { marketplace_fee: marketplaceFee }),
         metadata: {
           event_id: event.id,
           buyer_id: user.id,
