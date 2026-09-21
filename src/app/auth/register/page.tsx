@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, PartyPopper, Store } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { TicketStub } from "@/components/ticket-stub";
 
-type Rol = "buyer" | "organizer";
+// Alta de cuenta de organizador desactivada temporalmente durante la
+// prueba piloto: el registro público solo crea cuentas de comprador.
+// Las cuentas de organizador se dan de alta a mano mientras dure esto.
+const rol = "buyer" as const;
 
 export default function RegisterPage() {
   return (
@@ -21,7 +24,6 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
-  const [rol, setRol] = useState<Rol>("buyer");
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,9 +57,7 @@ function RegisterForm() {
       return;
     }
 
-    router.push(
-      redirectTo || (rol === "organizer" ? "/organizer/dashboard" : "/")
-    );
+    router.push(redirectTo || "/");
     router.refresh();
   }
 
@@ -101,35 +101,8 @@ function RegisterForm() {
         Creá tu cuenta
       </h1>
       <p className="text-haze text-sm mb-6">
-        Elegí cómo vas a usar Mis Entradas.
+        Registrate para comprar entradas a eventos.
       </p>
-
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <button
-          type="button"
-          onClick={() => setRol("buyer")}
-          className={`flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors ${
-            rol === "buyer"
-              ? "border-violet bg-violet/10 text-paper"
-              : "border-white/10 bg-surface text-haze"
-          }`}
-        >
-          <PartyPopper className="size-5" />
-          Comprador
-        </button>
-        <button
-          type="button"
-          onClick={() => setRol("organizer")}
-          className={`flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors ${
-            rol === "organizer"
-              ? "border-violet bg-violet/10 text-paper"
-              : "border-white/10 bg-surface text-haze"
-          }`}
-        >
-          <Store className="size-5" />
-          Organizador
-        </button>
-      </div>
 
       <TicketStub>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
