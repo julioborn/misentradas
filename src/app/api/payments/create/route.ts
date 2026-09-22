@@ -88,12 +88,12 @@ export async function POST(request: Request) {
           cantidad,
         },
         back_urls: {
-          success: `${process.env.NEXT_PUBLIC_APP_URL}/tickets`,
-          pending: `${process.env.NEXT_PUBLIC_APP_URL}/tickets`,
-          failure: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/${event.id}`,
+          success: `${process.env.APP_URL}/tickets`,
+          pending: `${process.env.APP_URL}/tickets`,
+          failure: `${process.env.APP_URL}/checkout/${event.id}`,
         },
         auto_return: "approved",
-        notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/webhook`,
+        notification_url: `${process.env.APP_URL}/api/payments/webhook`,
       },
     });
 

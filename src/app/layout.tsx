@@ -23,7 +23,7 @@ const anton = Anton({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://www.misentradas.com.ar"
+    process.env.APP_URL ?? "https://www.misentradas.com.ar"
   ),
   title: "Mis Entradas",
   description: "Entradas para eventos y fiestas, con QR al instante",

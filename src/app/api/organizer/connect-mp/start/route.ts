@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const authorizationUrl = oauth.getAuthorizationURL({
     options: {
       client_id: process.env.MP_CLIENT_ID!,
-      redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/organizer/connect-mp/callback`,
+      redirect_uri: `${process.env.APP_URL}/api/organizer/connect-mp/callback`,
       state,
     },
   });
