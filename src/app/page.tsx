@@ -8,7 +8,7 @@ import { LocationFilter } from "@/components/location-filter";
 import { LocationPrompt } from "@/components/location-prompt";
 import { SortSelect } from "@/components/sort-select";
 import { LOCATION_COOKIE, parseLocationCookie } from "@/lib/location-preference";
-import { formatDateTime } from "@/lib/date";
+import { formatDateTime, formatDayBadge, formatRelativeLabel } from "@/lib/date";
 
 type EventRow = {
   id: string;
@@ -108,10 +108,10 @@ export default async function HomePage({
       <p className="font-mono text-xs tracking-[0.3em] text-violet uppercase mb-2">
         Próximamente
       </p>
-      <h1 className="font-display text-3xl uppercase tracking-wide mb-1">
+      <h1 className="font-display text-4xl uppercase tracking-wide mb-1.5 leading-none">
         Eventos disponibles
       </h1>
-      <p className="text-haze text-sm mb-4">
+      <p className="text-haze text-sm mb-5">
         Comprá tu entrada y recibí el QR al instante.
       </p>
 
@@ -174,67 +174,82 @@ function EventCard({
   event: EventRow;
   organizer?: { nombre: string | null; avatar_url: string | null };
 }) {
+  const { day, month } = formatDayBadge(event.fecha);
+
   return (
-    <Link href={`/events/${event.id}`} className="block">
-      <TicketStub className="hover:bg-surface/80 transition-colors">
-        <div className="flex gap-3">
-          {event.imagen_url && (
-            <div className="size-16 shrink-0 rounded-lg overflow-hidden bg-ink">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={event.imagen_url}
-                alt={event.nombre}
-                className="w-full h-full object-cover"
-              />
+    <Link href={`/events/${event.id}`} className="block group">
+      <div className="rounded-3xl overflow-hidden bg-surface ring-1 ring-white/5 shadow-xl shadow-black/30 transition-transform group-active:scale-[0.98]">
+        <div className="relative aspect-[16/10] bg-ink">
+          {event.imagen_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={event.imagen_url}
+              alt={event.nombre}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Ticket className="size-10 text-white/10" />
             </div>
           )}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <h2 className="font-display text-base uppercase tracking-wide leading-tight">
-                {event.nombre}
-              </h2>
-              <span className="font-mono text-lg text-lime shrink-0">
-                ${event.precio}
-              </span>
-            </div>
-            {organizer && (
-              <div className="flex items-center gap-1.5 mt-1">
-                <div className="size-4 rounded-full overflow-hidden bg-surface border border-white/10 shrink-0 flex items-center justify-center">
-                  {organizer.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={organizer.avatar_url}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="font-display text-[8px] text-haze">
-                      {(organizer.nombre ?? "?").charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs text-haze truncate">
-                  {organizer.nombre}
-                </span>
-              </div>
-            )}
-            <div className="flex items-center gap-1.5 text-xs text-paper font-medium mt-1.5">
-              <CalendarDays className="size-3.5 text-violet shrink-0" />
-              {formatDateTime(event.fecha)}
-            </div>
-            {(event.lugar || event.localidad || event.provincia) && (
-              <div className="flex items-center gap-1.5 text-xs text-haze mt-1">
-                <MapPin className="size-3.5 shrink-0" />
-                <span className="truncate">
-                  {[event.lugar, event.localidad, event.provincia]
-                    .filter(Boolean)
-                    .join(", ")}
-                </span>
-              </div>
-            )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/10 to-transparent" />
+
+          <div className="absolute top-3 left-3 flex flex-col items-center rounded-xl bg-ink/80 backdrop-blur px-2.5 py-1.5 ring-1 ring-white/10 leading-none">
+            <span className="font-display text-lg text-paper">{day}</span>
+            <span className="font-mono text-[10px] tracking-widest text-violet">
+              {month}
+            </span>
+          </div>
+
+          <span className="absolute top-3 right-3 font-mono text-xl font-bold text-lime drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+            ${event.precio}
+          </span>
+
+          <div className="absolute bottom-0 inset-x-0 px-4 pb-3">
+            <h2 className="font-display text-xl uppercase tracking-wide leading-tight text-paper drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+              {event.nombre}
+            </h2>
           </div>
         </div>
-      </TicketStub>
+
+        <div className="px-4 py-3.5">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-violet uppercase tracking-wide">
+            <CalendarDays className="size-3.5 shrink-0" />
+            {formatRelativeLabel(event.fecha)} · {formatDateTime(event.fecha)}
+          </div>
+          {(event.lugar || event.localidad || event.provincia) && (
+            <div className="flex items-center gap-1.5 text-xs text-haze mt-1.5">
+              <MapPin className="size-3.5 shrink-0" />
+              <span className="truncate">
+                {[event.lugar, event.localidad, event.provincia]
+                  .filter(Boolean)
+                  .join(", ")}
+              </span>
+            </div>
+          )}
+          {organizer && (
+            <div className="flex items-center gap-1.5 mt-2.5 pt-2.5 border-t border-white/5">
+              <div className="size-5 rounded-full overflow-hidden bg-ink border border-white/10 shrink-0 flex items-center justify-center">
+                {organizer.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={organizer.avatar_url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="font-display text-[9px] text-haze">
+                    {(organizer.nombre ?? "?").charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <span className="text-xs text-haze truncate">
+                {organizer.nombre}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
     </Link>
   );
 }

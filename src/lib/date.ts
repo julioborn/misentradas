@@ -15,6 +15,41 @@ export function formatDate(iso: string) {
   });
 }
 
+const MONTH_ABBR = [
+  "ENE", "FEB", "MAR", "ABR", "MAY", "JUN",
+  "JUL", "AGO", "SEP", "OCT", "NOV", "DIC",
+];
+
+// Argentina wall-clock day/month for the small date-badge shown on event
+// cards, independent of the server process's own timezone.
+export function formatDayBadge(iso: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    day: "2-digit",
+    month: "numeric",
+  }).formatToParts(new Date(iso));
+  const day = parts.find((p) => p.type === "day")!.value;
+  const month = Number(parts.find((p) => p.type === "month")!.value);
+  return { day, month: MONTH_ABBR[month - 1] };
+}
+
+// "HOY" / "MAÑANA" when the event falls on those Argentina-local days,
+// otherwise the weekday name so the badge stays informative further out.
+export function formatRelativeLabel(iso: string) {
+  const fmt = (d: Date) =>
+    new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }).format(d);
+  const target = fmt(new Date(iso));
+  const today = fmt(new Date());
+  const tomorrow = fmt(new Date(Date.now() + 24 * 60 * 60 * 1000));
+
+  if (target === today) return "Hoy";
+  if (target === tomorrow) return "Mañana";
+  return new Date(iso).toLocaleDateString("es-AR", {
+    weekday: "long",
+    timeZone: TIME_ZONE,
+  });
+}
+
 export function formatDateTimeShort(iso: string) {
   return new Date(iso).toLocaleString("es-AR", {
     dateStyle: "short",

@@ -84,7 +84,7 @@ export default async function TicketsPage() {
                 <TicketStub className="hover:bg-surface/80 transition-colors">
                   <div className="flex gap-3">
                     {ticket.events?.imagen_url && (
-                      <div className="size-16 shrink-0 rounded-lg overflow-hidden bg-ink">
+                      <div className="size-20 shrink-0 rounded-xl overflow-hidden bg-ink">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={ticket.events.imagen_url}
@@ -94,7 +94,7 @@ export default async function TicketsPage() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-display uppercase tracking-wide leading-tight">
+                      <p className="font-display text-lg uppercase tracking-wide leading-tight">
                         {ticket.events?.nombre}
                       </p>
                       {organizer && (

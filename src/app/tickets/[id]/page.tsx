@@ -56,7 +56,7 @@ export default async function TicketDetailPage({
   return (
     <div className="py-6">
       {ticket.events?.imagen_url && (
-        <div className="aspect-video bg-surface rounded-xl overflow-hidden mb-4">
+        <div className="aspect-video bg-surface rounded-3xl overflow-hidden mb-4 ring-1 ring-white/5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={ticket.events.imagen_url}
@@ -66,11 +66,19 @@ export default async function TicketDetailPage({
         </div>
       )}
 
-      <TicketStub>
+      <TicketStub
+        className={`ring-1 ${
+          ticket.estado === "confirmed"
+            ? "ring-lime/20"
+            : ticket.estado === "cancelled"
+              ? "ring-violet/20"
+              : "ring-white/5"
+        }`}
+      >
         <div className="flex flex-col items-center text-center">
           {organizer && (
             <div className="flex items-center gap-2 mb-3">
-              <div className="size-8 rounded-full overflow-hidden bg-ink border border-white/10 shrink-0 flex items-center justify-center">
+              <div className="size-9 rounded-full overflow-hidden bg-ink border border-white/10 shrink-0 flex items-center justify-center">
                 {organizer.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -88,18 +96,18 @@ export default async function TicketDetailPage({
             </div>
           )}
 
-          <h1 className="font-display text-xl uppercase tracking-wide leading-tight text-balance">
+          <h1 className="font-display text-2xl uppercase tracking-wide leading-tight text-balance">
             {ticket.events?.nombre}
           </h1>
 
-          <div className="flex items-center gap-1.5 text-sm text-haze mt-2">
-            <CalendarDays className="size-4 shrink-0" />
+          <div className="flex items-center gap-1.5 text-sm text-haze mt-2.5">
+            <CalendarDays className="size-4 shrink-0 text-violet" />
             {ticket.events?.fecha && formatDateTime(ticket.events.fecha)}
           </div>
           {(ticket.events?.lugar ||
             ticket.events?.localidad ||
             ticket.events?.provincia) && (
-            <div className="flex items-center gap-1.5 text-sm text-haze mt-0.5">
+            <div className="flex items-center gap-1.5 text-sm text-haze mt-1">
               <MapPin className="size-4 shrink-0" />
               {[
                 ticket.events?.lugar,
@@ -112,7 +120,7 @@ export default async function TicketDetailPage({
           )}
 
           <span
-            className={`mt-3 text-xs font-medium rounded-full px-2.5 py-1 ${
+            className={`mt-3.5 text-xs font-semibold uppercase tracking-wide rounded-full px-3 py-1.5 ${
               ESTADO_CLASS[ticket.estado] ?? "bg-white/5 text-haze"
             }`}
           >
@@ -121,15 +129,15 @@ export default async function TicketDetailPage({
         </div>
 
         <div className="mt-6 pt-6 border-t border-dashed border-white/15 flex flex-col items-center text-center">
-          <div className="rounded-2xl bg-paper p-4">
+          <div className="rounded-2xl bg-paper p-5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrDataUrl}
               alt="Código QR de la entrada"
-              className="size-56"
+              className="size-64"
             />
           </div>
-          <p className="font-mono text-xs text-haze mt-3 break-all tracking-wide">
+          <p className="font-mono text-xs text-haze mt-4 break-all tracking-wide">
             {ticket.qr_code}
           </p>
         </div>
