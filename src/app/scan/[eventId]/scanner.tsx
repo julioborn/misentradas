@@ -55,13 +55,21 @@ export function Scanner({ eventId }: { eventId: string }) {
     async function start() {
       try {
         const { Capacitor } = await import("@capacitor/core");
+        const native = Capacitor.isNativePlatform();
+        setIsNative(native);
+
+        // Safari (iOS and macOS) never shipped the native BarcodeDetector
+        // API the plugin's web fallback relies on, so on-web scanning
+        // there needs a polyfill before the plugin's web implementation
+        // gets constructed.
+        if (!native && !("BarcodeDetector" in window)) {
+          await import("barcode-detector/polyfill");
+        }
+
         const mod = await import("@capacitor-mlkit/barcode-scanning");
         const { BarcodeFormat, BarcodeScanner } = mod;
         scannerModule = mod;
         if (cancelled) return;
-
-        const native = Capacitor.isNativePlatform();
-        setIsNative(native);
 
         const { camera } = await BarcodeScanner.requestPermissions();
         if (cancelled) return;

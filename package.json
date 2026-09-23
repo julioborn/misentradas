@@ -32,6 +32,7 @@
     "@capacitor/push-notifications": "^7.0.7",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.109.0",
+    "barcode-detector": "^3.2.2",
     "firebase-admin": "^13.5.0",
     "lucide-react": "^1.32.0",
     "mercadopago": "^3.4.0",
