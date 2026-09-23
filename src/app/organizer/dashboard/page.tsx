@@ -10,6 +10,7 @@ import {
   ScanLine,
   Ticket,
   Users,
+  type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TicketStub } from "@/components/ticket-stub";
@@ -138,63 +139,59 @@ export default async function OrganizerDashboardPage({
                       {formatDate(event.fecha)}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <form action={toggleEventActivo.bind(null, event.id)}>
-                      <button
-                        type="submit"
-                        aria-label={
-                          event.activo ? "Ocultar evento" : "Publicar evento"
-                        }
-                        title={event.activo ? "Visible" : "Oculto"}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                          event.activo ? "bg-lime" : "bg-white/10"
+                  <form
+                    action={toggleEventActivo.bind(null, event.id)}
+                    className="flex flex-col items-center gap-1 shrink-0"
+                  >
+                    <button
+                      type="submit"
+                      aria-label={
+                        event.activo ? "Ocultar evento" : "Publicar evento"
+                      }
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        event.activo ? "bg-lime" : "bg-white/10"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block size-3.5 transform rounded-full bg-ink transition-transform ${
+                          event.activo ? "translate-x-4" : "translate-x-1"
                         }`}
-                      >
-                        <span
-                          className={`inline-block size-3.5 transform rounded-full bg-ink transition-transform ${
-                            event.activo ? "translate-x-4" : "translate-x-1"
-                          }`}
-                        />
-                      </button>
-                    </form>
-                    <Link
-                      href={`/organizer/events/${event.id}/manual`}
-                      aria-label="Generar entrada manual"
-                      className="text-haze hover:text-violet"
-                    >
-                      <Banknote className="size-4" />
-                    </Link>
-                    <Link
-                      href={`/scan/${event.id}`}
-                      aria-label="Escanear entradas"
-                      className="text-haze hover:text-violet"
-                    >
-                      <ScanLine className="size-4" />
-                    </Link>
-                    <Link
-                      href={`/organizer/events/${event.id}/staff`}
-                      aria-label="Staff de entrada"
-                      className="text-haze hover:text-violet"
-                    >
-                      <Users className="size-4" />
-                    </Link>
-                    {event.stock_habilitado && (
-                      <Link
-                        href={`/organizer/events/${event.id}/stock`}
-                        aria-label="Control de stock"
-                        className="text-haze hover:text-violet"
-                      >
-                        <PackageSearch className="size-4" />
-                      </Link>
-                    )}
-                    <Link
-                      href={`/organizer/events/${event.id}/edit`}
-                      aria-label="Editar evento"
-                      className="text-haze hover:text-violet"
-                    >
-                      <Pencil className="size-4" />
-                    </Link>
-                  </div>
+                      />
+                    </button>
+                    <span className="text-[10px] uppercase tracking-wide text-haze">
+                      {event.activo ? "Publicado" : "Oculto"}
+                    </span>
+                  </form>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  <ActionLink
+                    href={`/organizer/events/${event.id}/manual`}
+                    icon={Banknote}
+                    label="Manual"
+                  />
+                  <ActionLink
+                    href={`/scan/${event.id}`}
+                    icon={ScanLine}
+                    label="Escanear"
+                  />
+                  <ActionLink
+                    href={`/organizer/events/${event.id}/staff`}
+                    icon={Users}
+                    label="Staff"
+                  />
+                  {event.stock_habilitado && (
+                    <ActionLink
+                      href={`/organizer/events/${event.id}/stock`}
+                      icon={PackageSearch}
+                      label="Stock"
+                    />
+                  )}
+                  <ActionLink
+                    href={`/organizer/events/${event.id}/edit`}
+                    icon={Pencil}
+                    label="Editar"
+                  />
                 </div>
 
                 <Link
@@ -214,5 +211,27 @@ export default async function OrganizerDashboardPage({
         </div>
       )}
     </div>
+  );
+}
+
+function ActionLink({
+  href,
+  icon: Icon,
+  label,
+}: {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex flex-col items-center justify-center gap-1 rounded-xl bg-ink border border-white/10 py-3 text-haze hover:text-violet hover:border-violet/30 transition-colors"
+    >
+      <Icon className="size-5" />
+      <span className="text-[10px] font-medium uppercase tracking-wide">
+        {label}
+      </span>
+    </Link>
   );
 }
