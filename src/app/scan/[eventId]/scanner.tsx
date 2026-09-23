@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 
-const REGION_ID = "qr-reader-region";
-
 type ScanResult = {
   valid: boolean;
   message?: string;
@@ -13,44 +11,29 @@ type ScanResult = {
 
 export function Scanner({ eventId }: { eventId: string }) {
   const [result, setResult] = useState<ScanResult | null>(null);
-  const [cameraError, setCameraError] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [isNative, setIsNative] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const checkingRef = useRef(false);
   const lastCodeRef = useRef<string | null>(null);
   const lastCodeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    let scannerInstance: import("html5-qrcode").Html5Qrcode | null = null;
+    let listenerHandle: { remove: () => void } | null = null;
+    let scannerModule: typeof import("@capacitor-mlkit/barcode-scanning") | null =
+      null;
 
-    async function start() {
-      const { Html5Qrcode } = await import("html5-qrcode");
-      if (cancelled) return;
-
-      const scanner = new Html5Qrcode(REGION_ID);
-      scannerInstance = scanner;
-
-      try {
-        await scanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: 250 },
-          handleScan,
-          undefined
-        );
-      } catch {
-        if (!cancelled) setCameraError(true);
-      }
-    }
-
-    async function handleScan(decodedText: string) {
-      if (checkingRef.current || decodedText === lastCodeRef.current) return;
+    async function handleScan(rawValue: string) {
+      if (checkingRef.current || rawValue === lastCodeRef.current) return;
       checkingRef.current = true;
-      lastCodeRef.current = decodedText;
+      lastCodeRef.current = rawValue;
 
       try {
         const res = await fetch("/api/tickets/validate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ eventId, qrCode: decodedText }),
+          body: JSON.stringify({ eventId, qrCode: rawValue }),
         });
         const data = await res.json();
         setResult(
@@ -69,28 +52,85 @@ export function Scanner({ eventId }: { eventId: string }) {
       }
     }
 
+    async function start() {
+      try {
+        const { Capacitor } = await import("@capacitor/core");
+        const mod = await import("@capacitor-mlkit/barcode-scanning");
+        const { BarcodeFormat, BarcodeScanner } = mod;
+        scannerModule = mod;
+        if (cancelled) return;
+
+        const native = Capacitor.isNativePlatform();
+        setIsNative(native);
+
+        const { camera } = await BarcodeScanner.requestPermissions();
+        if (cancelled) return;
+
+        if (camera !== "granted" && camera !== "limited") {
+          setCameraError(
+            "No tenés permiso de cámara. Habilitalo en los ajustes del sistema e intentá de nuevo."
+          );
+          return;
+        }
+
+        listenerHandle = await BarcodeScanner.addListener(
+          "barcodesScanned",
+          (event) => {
+            const value = event.barcodes[0]?.rawValue;
+            if (value) handleScan(value);
+          }
+        );
+
+        if (native) {
+          document.body.classList.add("barcode-scanner-active");
+        }
+
+        await BarcodeScanner.startScan({
+          formats: [BarcodeFormat.QrCode],
+          videoElement: native ? undefined : (videoRef.current ?? undefined),
+        });
+      } catch {
+        if (!cancelled) {
+          setCameraError(
+            "No pudimos acceder a la cámara. Revisá los permisos e intentá de nuevo."
+          );
+        }
+      }
+    }
+
     start();
 
     return () => {
       cancelled = true;
       if (lastCodeTimerRef.current) clearTimeout(lastCodeTimerRef.current);
-      if (scannerInstance) {
-        scannerInstance
-          .stop()
-          .catch(() => {})
-          .finally(() => scannerInstance?.clear());
-      }
+      listenerHandle?.remove();
+      scannerModule?.BarcodeScanner.stopScan().catch(() => {});
+      document.body.classList.remove("barcode-scanner-active");
     };
   }, [eventId]);
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="w-full rounded-2xl overflow-hidden bg-surface border border-white/10">
-        <div id={REGION_ID} className="w-full" />
+    <div className="barcode-scanner-modal flex flex-col items-center">
+      <div
+        className={`w-full aspect-square rounded-2xl overflow-hidden border border-white/10 relative ${
+          isNative ? "bg-transparent" : "bg-surface"
+        }`}
+      >
+        {!isNative && (
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            muted
+            playsInline
+            autoPlay
+          />
+        )}
+        {!cameraError && (
+          <div className="absolute inset-6 rounded-xl border-2 border-violet/60 pointer-events-none" />
+        )}
         {cameraError && (
-          <p className="text-sm text-violet text-center px-4 py-8">
-            No pudimos acceder a la cámara. Revisá los permisos del navegador
-            e intentá de nuevo.
+          <p className="absolute inset-0 flex items-center justify-center bg-surface text-sm text-violet text-center px-4">
+            {cameraError}
           </p>
         )}
       </div>
