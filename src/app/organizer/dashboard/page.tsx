@@ -4,6 +4,7 @@ import {
   Banknote,
   CalendarDays,
   Link2,
+  PackageSearch,
   Pencil,
   Plus,
   ScanLine,
@@ -43,7 +44,9 @@ export default async function OrganizerDashboardPage({
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, nombre, fecha, precio, stock_total, stock_disponible, activo")
+    .select(
+      "id, nombre, fecha, precio, stock_total, stock_disponible, activo, stock_habilitado"
+    )
     .eq("organizer_id", user.id)
     .order("fecha", { ascending: true });
 
@@ -175,6 +178,15 @@ export default async function OrganizerDashboardPage({
                     >
                       <Users className="size-4" />
                     </Link>
+                    {event.stock_habilitado && (
+                      <Link
+                        href={`/organizer/events/${event.id}/stock`}
+                        aria-label="Control de stock"
+                        className="text-haze hover:text-violet"
+                      >
+                        <PackageSearch className="size-4" />
+                      </Link>
+                    )}
                     <Link
                       href={`/organizer/events/${event.id}/edit`}
                       aria-label="Editar evento"

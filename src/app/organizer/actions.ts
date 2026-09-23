@@ -353,6 +353,47 @@ export async function removeEventStaff(eventId: string, staffId: string) {
   redirect(`/organizer/events/${eventId}/staff?removed=1`);
 }
 
+export async function updateStockCounts(eventId: string, formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  if (!(await assertOwnsEvent(supabase, eventId, user.id))) {
+    redirect("/organizer/dashboard");
+  }
+
+  const { data: items } = await supabase
+    .from("stock_items")
+    .select("id")
+    .eq("event_id", eventId);
+
+  function parseCount(value: FormDataEntryValue | null) {
+    if (value === null || value === "") return null;
+    const n = Number(value);
+    return Number.isInteger(n) && n >= 0 ? n : null;
+  }
+
+  await Promise.all(
+    (items ?? []).map((item) =>
+      supabase
+        .from("stock_items")
+        .update({
+          cantidad_inicial: parseCount(formData.get(`inicial_${item.id}`)),
+          cantidad_final: parseCount(formData.get(`final_${item.id}`)),
+        })
+        .eq("id", item.id)
+    )
+  );
+
+  revalidatePath(`/organizer/events/${eventId}/stock`);
+  redirect(`/organizer/events/${eventId}/stock?success=1`);
+}
+
 export async function generateManualTicket(eventId: string, formData: FormData) {
   const supabase = await createClient();
   const {
