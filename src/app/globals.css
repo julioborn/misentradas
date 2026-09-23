@@ -42,16 +42,3 @@ body {
   background: var(--color-ink);
   box-shadow: inset 0 0 0 1px rgba(245, 241, 250, 0.08);
 }
-
-/* @capacitor-mlkit/barcode-scanning (native): the plugin draws the
-   camera feed natively behind the WebView, so everything else has to
-   turn fully transparent — only the scanner's own overlay (marked
-   with .barcode-scanner-modal) stays visible on top of it. */
-body.barcode-scanner-active {
-  visibility: hidden;
-  background: transparent !important;
-}
-
-body.barcode-scanner-active .barcode-scanner-modal {
-  visibility: visible;
-}

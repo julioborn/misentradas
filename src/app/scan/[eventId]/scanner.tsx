@@ -9,10 +9,19 @@ type ScanResult = {
   buyerName?: string | null;
 };
 
+type BarcodeDetectorLike = {
+  detect(source: CanvasImageSource): Promise<Array<{ rawValue: string }>>;
+};
+
+declare global {
+  interface Window {
+    BarcodeDetector?: new (options?: { formats: string[] }) => BarcodeDetectorLike;
+  }
+}
+
 export function Scanner({ eventId }: { eventId: string }) {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [isNative, setIsNative] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const checkingRef = useRef(false);
   const lastCodeRef = useRef<string | null>(null);
@@ -20,9 +29,8 @@ export function Scanner({ eventId }: { eventId: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    let listenerHandle: { remove: () => void } | null = null;
-    let scannerModule: typeof import("@capacitor-mlkit/barcode-scanning") | null =
-      null;
+    let stream: MediaStream | null = null;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
     async function handleScan(rawValue: string) {
       if (checkingRef.current || rawValue === lastCodeRef.current) return;
@@ -54,49 +62,39 @@ export function Scanner({ eventId }: { eventId: string }) {
 
     async function start() {
       try {
-        const { Capacitor } = await import("@capacitor/core");
-        const native = Capacitor.isNativePlatform();
-        setIsNative(native);
-
         // Safari (iOS and macOS) never shipped the native BarcodeDetector
-        // API the plugin's web fallback relies on, so on-web scanning
-        // there needs a polyfill before the plugin's web implementation
-        // gets constructed.
-        if (!native && !("BarcodeDetector" in window)) {
+        // API, so this loads a WASM polyfill there; Chrome/Android already
+        // has it built in and this import is a no-op.
+        if (!("BarcodeDetector" in window)) {
           await import("barcode-detector/polyfill");
         }
-
-        const mod = await import("@capacitor-mlkit/barcode-scanning");
-        const { BarcodeFormat, BarcodeScanner } = mod;
-        scannerModule = mod;
         if (cancelled) return;
 
-        const { camera } = await BarcodeScanner.requestPermissions();
-        if (cancelled) return;
-
-        if (camera !== "granted" && camera !== "limited") {
-          setCameraError(
-            "No tenés permiso de cámara. Habilitalo en los ajustes del sistema e intentá de nuevo."
-          );
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
+          audio: false,
+        });
+        if (cancelled) {
+          stream.getTracks().forEach((track) => track.stop());
           return;
         }
 
-        listenerHandle = await BarcodeScanner.addListener(
-          "barcodesScanned",
-          (event) => {
-            const value = event.barcodes[0]?.rawValue;
+        const video = videoRef.current;
+        if (!video) return;
+        video.srcObject = stream;
+        await video.play();
+
+        const detector = new window.BarcodeDetector!({ formats: ["qr_code"] });
+        intervalId = setInterval(async () => {
+          if (checkingRef.current) return;
+          try {
+            const barcodes = await detector.detect(video);
+            const value = barcodes[0]?.rawValue;
             if (value) handleScan(value);
+          } catch {
+            // Transient decode errors (e.g. blurry frame) are expected; ignore and retry.
           }
-        );
-
-        if (native) {
-          document.body.classList.add("barcode-scanner-active");
-        }
-
-        await BarcodeScanner.startScan({
-          formats: [BarcodeFormat.QrCode],
-          videoElement: native ? undefined : (videoRef.current ?? undefined),
-        });
+        }, 400);
       } catch {
         if (!cancelled) {
           setCameraError(
@@ -111,28 +109,21 @@ export function Scanner({ eventId }: { eventId: string }) {
     return () => {
       cancelled = true;
       if (lastCodeTimerRef.current) clearTimeout(lastCodeTimerRef.current);
-      listenerHandle?.remove();
-      scannerModule?.BarcodeScanner.stopScan().catch(() => {});
-      document.body.classList.remove("barcode-scanner-active");
+      if (intervalId) clearInterval(intervalId);
+      stream?.getTracks().forEach((track) => track.stop());
     };
   }, [eventId]);
 
   return (
-    <div className="barcode-scanner-modal flex flex-col items-center">
-      <div
-        className={`w-full aspect-square rounded-2xl overflow-hidden border border-white/10 relative ${
-          isNative ? "bg-transparent" : "bg-surface"
-        }`}
-      >
-        {!isNative && (
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            muted
-            playsInline
-            autoPlay
-          />
-        )}
+    <div className="flex flex-col items-center">
+      <div className="w-full aspect-square rounded-2xl overflow-hidden border border-white/10 relative bg-surface">
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          muted
+          playsInline
+          autoPlay
+        />
         {!cameraError && (
           <div className="absolute inset-6 rounded-xl border-2 border-violet/60 pointer-events-none" />
         )}
