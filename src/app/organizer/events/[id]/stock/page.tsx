@@ -98,70 +98,79 @@ export default async function EventStockPage({
         </TicketStub>
       ) : (
         <form action={updateStockCountsWithId} className="flex flex-col gap-3">
-          {stockItems.map((item) => {
-            const consumido =
-              item.cantidad_inicial !== null && item.cantidad_final !== null
-                ? item.cantidad_inicial - item.cantidad_final
-                : null;
+          <div className="grid grid-cols-2 gap-3">
+            {stockItems.map((item) => {
+              const consumido =
+                item.cantidad_inicial !== null && item.cantidad_final !== null
+                  ? item.cantidad_inicial - item.cantidad_final
+                  : null;
 
-            return (
-              <TicketStub key={item.id}>
-                <div className="flex items-center gap-3">
-                  <StockIcon type={item.icono} color={item.color} />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-display uppercase tracking-wide leading-tight">
+              return (
+                <div
+                  key={item.id}
+                  className="rounded-2xl bg-surface ring-1 ring-white/5 p-3"
+                >
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <StockIcon
+                      type={item.icono}
+                      color={item.color}
+                      containerClassName="size-8"
+                      className="size-4"
+                    />
+                    <p className="font-display text-xs uppercase tracking-wide leading-tight truncate">
                       {item.nombre}
                     </p>
-                    {consumido !== null && (
-                      <p className="text-xs text-haze mt-0.5">
-                        Consumido:{" "}
-                        <span className="text-lime font-medium">
-                          {consumido}
-                        </span>
-                      </p>
-                    )}
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-dashed border-white/10">
-                  <div className="flex flex-col gap-1">
-                    <label
-                      htmlFor={`inicial_${item.id}`}
-                      className="text-xs uppercase tracking-wide text-haze"
-                    >
-                      Inicial
-                    </label>
-                    <input
-                      id={`inicial_${item.id}`}
-                      name={`inicial_${item.id}`}
-                      type="number"
-                      min="0"
-                      step="1"
-                      defaultValue={item.cantidad_inicial ?? ""}
-                      className="rounded-lg bg-ink border border-white/10 px-3 py-2 text-paper focus:outline-none focus:ring-2 focus:ring-violet"
-                    />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor={`inicial_${item.id}`}
+                        className="text-[10px] uppercase tracking-wide text-haze"
+                      >
+                        Inicial
+                      </label>
+                      <input
+                        id={`inicial_${item.id}`}
+                        name={`inicial_${item.id}`}
+                        type="number"
+                        min="0"
+                        step="1"
+                        defaultValue={item.cantidad_inicial ?? ""}
+                        className="w-full rounded-lg bg-ink border border-white/10 px-2 py-1.5 text-sm text-paper focus:outline-none focus:ring-2 focus:ring-violet"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor={`final_${item.id}`}
+                        className="text-[10px] uppercase tracking-wide text-haze"
+                      >
+                        Final
+                      </label>
+                      <input
+                        id={`final_${item.id}`}
+                        name={`final_${item.id}`}
+                        type="number"
+                        min="0"
+                        step="1"
+                        defaultValue={item.cantidad_final ?? ""}
+                        className="w-full rounded-lg bg-ink border border-white/10 px-2 py-1.5 text-sm text-paper focus:outline-none focus:ring-2 focus:ring-violet"
+                      />
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <label
-                      htmlFor={`final_${item.id}`}
-                      className="text-xs uppercase tracking-wide text-haze"
-                    >
-                      Final
-                    </label>
-                    <input
-                      id={`final_${item.id}`}
-                      name={`final_${item.id}`}
-                      type="number"
-                      min="0"
-                      step="1"
-                      defaultValue={item.cantidad_final ?? ""}
-                      className="rounded-lg bg-ink border border-white/10 px-3 py-2 text-paper focus:outline-none focus:ring-2 focus:ring-violet"
-                    />
-                  </div>
+
+                  {consumido !== null && (
+                    <p className="text-[11px] text-haze mt-2">
+                      Consumido:{" "}
+                      <span className="text-lime font-medium">
+                        {consumido}
+                      </span>
+                    </p>
+                  )}
                 </div>
-              </TicketStub>
-            );
-          })}
+              );
+            })}
+          </div>
 
           <TicketStub className="ring-1 ring-lime/20">
             <p className="font-mono text-xs uppercase tracking-widest text-haze mb-2">

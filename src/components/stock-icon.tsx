@@ -12,15 +12,17 @@ const PATHS: Record<StockIconType, string> = {
 export function StockIcon({
   type,
   color,
+  containerClassName = "size-11",
   className = "size-6",
 }: {
   type: StockIconType;
   color: string;
+  containerClassName?: string;
   className?: string;
 }) {
   return (
     <div
-      className="size-11 shrink-0 rounded-full flex items-center justify-center"
+      className={`${containerClassName} shrink-0 rounded-full flex items-center justify-center`}
       style={{ backgroundColor: `${color}26` }}
     >
       <svg
