@@ -253,6 +253,7 @@ export type Database = {
           id: string
           nombre: string
           orden: number
+          unidades_por_pack: number
         }
         Insert: {
           cantidad_final?: number | null
@@ -264,6 +265,7 @@ export type Database = {
           id?: string
           nombre: string
           orden?: number
+          unidades_por_pack?: number
         }
         Update: {
           cantidad_final?: number | null
@@ -275,6 +277,7 @@ export type Database = {
           id?: string
           nombre?: string
           orden?: number
+          unidades_por_pack?: number
         }
         Relationships: [
           {

@@ -369,13 +369,23 @@ export async function updateStockCounts(eventId: string, formData: FormData) {
 
   const { data: items } = await supabase
     .from("stock_items")
-    .select("id")
+    .select("id, unidades_por_pack")
     .eq("event_id", eventId);
 
-  function parseCount(value: FormDataEntryValue | null) {
-    if (value === null || value === "") return null;
-    const n = Number(value);
-    return Number.isInteger(n) && n >= 0 ? n : null;
+  function parseCount(
+    fieldName: string,
+    unidadesPorPack: number
+  ): number | null {
+    const rawValue = formData.get(fieldName);
+    if (rawValue === null || rawValue === "") return null;
+
+    const n = Number(rawValue);
+    if (Number.isNaN(n) || n < 0) return null;
+
+    const modo = formData.get(`${fieldName}_modo`);
+    const units = modo === "pack" ? n * unidadesPorPack : n;
+
+    return Math.round(units);
   }
 
   await Promise.all(
@@ -383,8 +393,14 @@ export async function updateStockCounts(eventId: string, formData: FormData) {
       supabase
         .from("stock_items")
         .update({
-          cantidad_inicial: parseCount(formData.get(`inicial_${item.id}`)),
-          cantidad_final: parseCount(formData.get(`final_${item.id}`)),
+          cantidad_inicial: parseCount(
+            `inicial_${item.id}`,
+            item.unidades_por_pack
+          ),
+          cantidad_final: parseCount(
+            `final_${item.id}`,
+            item.unidades_por_pack
+          ),
         })
         .eq("id", item.id)
     )
