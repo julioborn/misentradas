@@ -33,10 +33,18 @@ export function StockCountField({
     setModo(nextModo);
   }
 
-  const equivalentUnits =
-    modo === "pack" && value !== "" && !Number.isNaN(Number(value))
-      ? Math.round(Number(value) * unidadesPorPack)
-      : null;
+  const numericValue = value === "" ? null : Number(value);
+  const hasValue = numericValue !== null && !Number.isNaN(numericValue);
+  const units = !hasValue
+    ? null
+    : modo === "unidad"
+      ? numericValue
+      : Math.round(numericValue * unidadesPorPack);
+  const packs = !hasValue
+    ? null
+    : modo === "pack"
+      ? numericValue
+      : Math.round((numericValue / unidadesPorPack) * 100) / 100;
 
   return (
     <div className="flex flex-col gap-1">
@@ -62,8 +70,10 @@ export function StockCountField({
         className="w-full rounded-lg bg-ink border border-white/10 px-3 py-2.5 text-paper focus:outline-none focus:ring-2 focus:ring-violet"
       />
       <input type="hidden" name={`${fieldName}_modo`} value={modo} />
-      {equivalentUnits !== null && (
-        <p className="text-xs text-haze">= {equivalentUnits} u.</p>
+      {hasValue && (
+        <p className="text-xs text-haze">
+          {units} u. · {packs} pack{packs === 1 ? "" : "s"}
+        </p>
       )}
     </div>
   );
